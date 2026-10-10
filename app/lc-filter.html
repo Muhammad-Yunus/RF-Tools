@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RF LC Filter Designer &mdash; Lowpass / Bandpass / Bandstop | RF Tools</title>
+<script>try{var t=localStorage.getItem("rf-theme");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+<script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="lc-filter">
+<script src="../assets/nav.js"></script>
+
+<main>
+  <div class="page-head">
+    <h1><span class="ico"><i data-lucide="audio-waveform"></i></span> RF LC Filter Designer</h1>
+    <p>Lowpass / Bandpass / Bandstop &mdash; Butterworth &amp; Chebyshev, skema ladder + respon S21 / S11.</p>
+  </div>
+
+  <div class="grid">
+    <!-- INPUT PANEL -->
+    <div class="card">
+      <h2><span class="ico"><i data-lucide="sliders-horizontal"></i></span>Parameters</h2>
+
+      <div class="field">
+        <label><span class="ico"><i data-lucide="activity"></i></span>Response</label>
+        <div class="row">
+          <select id="respType">
+            <option value="lowpass" selected>Lowpass</option>
+            <option value="bandpass">Bandpass</option>
+            <option value="bandstop">Bandstop</option>
+          </select>
+          <span class="unit"></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label><span class="ico"><i data-lucide="git-branch"></i></span>Filter Type</label>
+        <div class="row">
+          <select id="filterType">
+            <option value="butterworth">Butterworth (maximally flat)</option>
+            <option value="chebyshev" selected>Chebyshev (equal ripple)</option>
+            <option value="elliptic" disabled>Elliptic / Cauer (segera)</option>
+          </select>
+          <span class="unit"></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label><span class="ico"><i data-lucide="align-horizontal-space-around"></i></span>Topology</label>
+        <div class="row">
+          <select id="topology">
+            <option value="series">Conventional &mdash; Series First</option>
+            <option value="shunt" selected>Conventional &mdash; Shunt First</option>
+          </select>
+          <span class="unit"></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label><span class="ico"><i data-lucide="layers"></i></span>Filter Order (N)</label>
+        <div class="row">
+          <input type="number" id="order" value="9" step="1" min="1" max="10">
+          <span class="unit">pol</span>
+        </div>
+      </div>
+
+      <div class="field hidden" id="rippleField">
+        <label><span class="ico"><i data-lucide="waves"></i></span>Passband Ripple</label>
+        <div class="row">
+          <input type="number" id="ripple" value="0.5" step="0.1" min="0.01" max="3">
+          <span class="unit">dB</span>
+        </div>
+      </div>
+
+      <div class="field" id="lpFreq">
+        <label><span class="ico"><i data-lucide="gauge"></i></span>Cutoff Frequency (f&#8319;)</label>
+        <div class="row">
+          <input type="number" id="fc" value="32" step="1" min="0.0001">
+          <span class="unit">MHz</span>
+        </div>
+      </div>
+
+      <div class="field hidden" id="bpFreq">
+        <label><span class="ico"><i data-lucide="gauge"></i></span>Band Edges (f&#8321; &ndash; f&#8322;)</label>
+        <div class="row">
+          <input type="number" id="f1" value="90" step="1" min="0.0001">
+          <input type="number" id="f2" value="110" step="1" min="0.0001">
+          <span class="unit">MHz</span>
+        </div>
+        <div class="hint">Bandpass/Bandstop: f&#8321; = batas bawah, f&#8322; = batas atas.</div>
+      </div>
+
+      <div class="field">
+        <label><span class="ico"><i data-lucide="cable"></i></span>System Impedance (Z&#8320;)</label>
+        <div class="row">
+          <input type="number" id="z0" value="50" step="1" min="1">
+          <span class="unit">&Omega;</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label><span class="ico"><i data-lucide="ruler"></i></span>Component Values</label>
+        <div class="seg" id="vmode">
+          <button data-v="exact" class="active"><i data-lucide="infinity"></i>Exact</button>
+          <button data-v="std"><i data-lucide="list-ordered"></i>Standard (E24)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="stack">
+      <div class="card sch-card">
+        <h2><span class="ico"><i data-lucide="circuit-board"></i></span>Schematic (Ladder)</h2>
+        <div class="diagram-wrap" id="schematic"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="ico"><i data-lucide="line-chart"></i></span>Frequency Response</h2>
+        <div class="chart-box"><canvas id="chart"></canvas></div>
+        <div class="chart-legend" id="chartLegend"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="ico"><i data-lucide="clipboard-list"></i></span>Components &amp; Terminations</h2>
+        <table class="comp-table" id="compTable"></table>
+        <table class="result" id="termInfo" style="margin-top:14px"></table>
+        <div class="note" id="designNote"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="../assets/lc-filter.js"></script>
+</body>
+</html>

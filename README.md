@@ -1,8 +1,10 @@
 # RF Tools 📡
 
-> Kalkulator utilitas RF berbasis web — hitung nilai resistor attenuator **Pi** & **T (Tee)** lengkap dengan diagram rangkaian, toleransi, dan power rating.
+> Kumpulan kalkulator utilitas RF berbasis web — murni HTML/CSS/JS, berjalan sepenuhnya di browser tanpa server.
 
-Dibuat untuk teknisi & hobbyist RF: masukkan impedansi sistem dan redaman yang diinginkan, langsung dapat nilai resistor plus skema rangkaiannya. Atau sebaliknya — masukkan nilai resistor yang ada, cek redaman aktualnya.
+Saat ini tersedia:
+- **RF Attenuator** — nilai resistor pad **Pi (π)** & **T (Tee)** lengkap dengan diagram, toleransi, dan power rating.
+- **RF LC Filter Designer** — filter **Lowpass / Bandpass / Bandstop** (Butterworth & Chebyshev) dengan skema ladder, tabel komponen, dan grafik respons |S21|/|S11|.
 
 ## Badges
 
@@ -12,7 +14,6 @@ Dibuat untuk teknisi & hobbyist RF: masukkan impedansi sistem dan redaman yang d
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
 ![SVG](https://img.shields.io/badge/Render-SVG-orange)
 ![Lucide](https://img.shields.io/badge/Icons-Lucide-F56565?logo=lucide&logoColor=white)
-![Single File](https://img.shields.io/badge/Single%20file-yes-blue)
 ![No Build](https://img.shields.io/badge/No%20build%20tools-required-blue)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
@@ -24,16 +25,25 @@ Dibuat untuk teknisi & hobbyist RF: masukkan impedansi sistem dan redaman yang d
 
 ## Fitur Utama
 
-- **Dua topologi attenuator** — **Pi (π)** dan **T (Tee)**, pilih lewat tab.
+### RF Attenuator
+- **Dua topologi** — **Pi (π)** dan **T (Tee)**, pilih lewat tab.
 - **Mode Design (dB → R)** — masukkan impedansi sistem (Z₀, default 50 Ω) dan redaman target (dB), dapatkan nilai R series & R shunt.
 - **Mode Analyze (R → dB)** — masukkan nilai resistor yang sudah ada, hitung redaman aktual dan impedansi karakteristiknya.
-- **Diagram rangkaian SVG otomatis** — simbol resistor (zigzag) konsisten, label R1/R2 beserta nilainya langsung tampil dan berubah mengikuti input.
-- **Preset cepat** — tombol 1 / 2 / 3 / 4 / 6 / 10 / 20 / 30 dB.
-- **Toleransi resistor** — pilih ±1 / ±2 / ±5 / ±10%, tampil rentang redaman *worst-case*.
-- **Power rating** — hitung disipasi per resistor dari input power, plus rekomendasi rating (1/8 W, 1/4 W, 1/2 W, 1 W, …) dan output power.
-- **Impedansi karakteristik** — dihitung dari nilai resistor pada mode Analyze.
+- **Toleransi resistor** — ±1 / ±2 / ±5 / ±10%, tampil rentang redaman *worst-case*.
+- **Power rating** — disipasi per resistor dari input power, plus rekomendasi rating dan output power.
+
+### RF LC Filter
+- **Tiga respons** — **Lowpass**, **Bandpass**, **Bandstop**.
+- **Dua tipe** — **Butterworth** (maximally flat) dan **Chebyshev** (equal ripple). *(Elliptic/Cauer menyusul.)*
+- **Dua topologi** — Conventional **Series-First** dan **Shunt-First**.
+- **Orde 1–10**, frekuensi cutoff (lowpass) atau band edges f₁–f₂ (bandpass/bandstop), satuan MHz.
+- **Skema ladder SVG otomatis** — simbol L/C diskalakan, label dan nilai langsung tampil.
+- **Tabel komponen** — nilai eksak atau dibulatkan ke deret **E24**.
+- **Grafik respons** — kurva |S21| dan |S11| (dB) vs frekuensi (skala log), dihitung via matriks ABCD.
+
+### Umum
 - **Tema gelap/terang** — flat & modern, palet primary `#E5E793` / secondary `#8B8D08`.
-- **Tema ikon Lucide** pada menu, field, dan bagian penting.
+- **Ikon Lucide** pada menu, field, dan bagian penting.
 
 ---
 
@@ -52,11 +62,19 @@ python -m http.server 8000
 ## Struktur
 
 ```
-index.html                          # seluruh aplikasi (satu file)
-.github/workflows/deploy.yml        # workflow deploy ke GitHub Pages
+index.html                  # landing page (daftar tool)
+app/rf-attenuator.html      # halaman RF Attenuator
+app/lc-filter.html          # halaman RF LC Filter
+assets/style.css            # tema + gaya bersama
+assets/nav.js               # navbar + theme toggle (injected)
+assets/rf-attenuator.js     # logika attenuator
+assets/lc-filter.js         # logika filter LC (prototipe, transform, S-param, UI)
+.github/workflows/deploy.yml
 ```
 
 ## Rumus
+
+### Attenuator
 
 Dengan `K = 10^(dB/20)` dan impedansi sistem `Z₀`:
 
@@ -74,10 +92,35 @@ R_shunt  = Z₀ · 2K / (K² − 1)
 
 Analisis balik (R → dB): `A = 1 + R_series/R_shunt`, lalu `K = A + √(A² − 1)`.
 
+### Filter LC
+
+Prototipe lowpass ternormalisasi (cutoff 1 rad/s, Z₀ = 1) memakai g-value klasik:
+
+**Butterworth**
+```
+g_k = 2·sin((2k − 1)·π / (2N)),   k = 1..N
+```
+
+**Chebyshev** (ripple R dB)
+```
+β = ln(coth(R / 17.37))
+γ = sinh(β / (2N))
+a_k = sin((2k − 1)·π / (2N))
+b_k = γ² + sin²(kπ / N)
+g₁  = 2·a₁ / γ
+g_k = 4·a_{k−1}·a_k / (b_{k−1}·g_{k−1})
+```
+`g_{N+1} = 1` untuk orde ganjil, `g_{N+1} = coth²(β/4)` untuk orde genap
+(orde genap Chebyshev memiliki terminasi tak-sama secara klasik).
+
+Transformasi LP → BP/BS: `ω₀ = √(ω₁·ω₂)`, `Δ = (ω₂ − ω₁)/ω₀`. Resonator disusun
+sebagai LC seri (arm seri) atau LC paralel (arm shunt). Analisis respons memakai
+matriks ABCD tiap cabang lalu dikonversi ke S-parameter.
+
 ## Tech Stack
 
 - **HTML/CSS/JavaScript** murni — tanpa framework, tanpa step build.
-- **SVG** untuk render diagram rangkaian.
+- **SVG** untuk skema rangkaian dan grafik (Canvas 2D untuk kurva respons).
 - **Lucide** (`0.454.0`) untuk ikon.
 
 ## License

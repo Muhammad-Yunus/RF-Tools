@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RF Attenuator Calculator &mdash; Pi / T | RF Tools</title>
+<script>try{var t=localStorage.getItem("rf-theme");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+<script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="attenuator">
+<script src="../assets/nav.js"></script>
+
+<main>
+  <div class="page-head">
+    <h1><span class="ico"><i data-lucide="gauge"></i></span> RF Attenuator Calculator</h1>
+    <p>Pi &amp; T (Tee) pad &mdash; design &amp; analyze nilai resistor.</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-net="pi"><span class="ico"><i data-lucide="pi"></i></span>Pi Attenuator<small>&pi; pad &mdash; 2 shunt + 1 series</small></div>
+    <div class="tab" data-net="t"><span class="ico"><i data-lucide="git-commit-horizontal"></i></span>T (Tee) Attenuator<small>T pad &mdash; 2 series + 1 shunt</small></div>
+  </div>
+
+  <div class="grid">
+    <!-- INPUT PANEL -->
+    <div class="card">
+      <h2><span class="ico"><i data-lucide="sliders-horizontal"></i></span>Parameters</h2>
+
+      <div class="mode-toggle">
+        <button id="modeDesign" class="active"><i data-lucide="calculator"></i>Design (dB &rarr; R)</button>
+        <button id="modeAnalyze"><i data-lucide="scan-search"></i>Analyze (R &rarr; dB)</button>
+      </div>
+
+      <!-- DESIGN MODE -->
+      <div id="designInputs">
+        <div class="field">
+          <label><span class="ico"><i data-lucide="cable"></i></span>System Impedance (Z&#8320;)</label>
+          <div class="row">
+            <input type="number" id="z0" value="50" step="1" min="1">
+            <span class="unit">&Omega;</span>
+          </div>
+        </div>
+        <div class="field">
+          <label><span class="ico"><i data-lucide="trending-down"></i></span>Attenuation</label>
+          <div class="row">
+            <input type="number" id="attn" value="6" step="0.5" min="0.1">
+            <span class="unit">dB</span>
+          </div>
+          <div class="presets-label"><span class="ico"><i data-lucide="gauge"></i></span>Preset (dB)</div>
+          <div class="presets">
+            <button data-db="1">1</button>
+            <button data-db="2">2</button>
+            <button data-db="3">3</button>
+            <button data-db="4">4</button>
+            <button data-db="6">6</button>
+            <button data-db="10">10</button>
+            <button data-db="20">20</button>
+            <button data-db="30">30</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYZE MODE -->
+      <div id="analyzeInputs" class="hidden">
+        <div class="field">
+          <label><span class="ico"><i data-lucide="minus"></i></span>R series (R1)</label>
+          <div class="row">
+            <input type="number" id="rSeries" value="37.35" step="0.01" min="0.01">
+            <span class="unit">&Omega;</span>
+          </div>
+        </div>
+        <div class="field">
+          <label><span class="ico"><i data-lucide="arrow-down-to-line"></i></span>R shunt (R2)</label>
+          <div class="row">
+            <input type="number" id="rShunt" value="150.48" step="0.01" min="0.01">
+            <span class="unit">&Omega;</span>
+          </div>
+          <div class="hint">Simetris: R2 dipakai di kedua sisi.</div>
+        </div>
+      </div>
+
+      <!-- COMMON -->
+      <div class="field">
+        <label><span class="ico"><i data-lucide="percent"></i></span>Toleransi Resistor</label>
+        <div class="row">
+          <select id="tol">
+            <option value="0">Ideal (0%)</option>
+            <option value="1">&plusmn;1%</option>
+            <option value="2">&plusmn;2%</option>
+            <option value="5" selected>&plusmn;5%</option>
+            <option value="10">&plusmn;10%</option>
+          </select>
+          <span class="unit"></span>
+        </div>
+      </div>
+      <div class="field">
+        <label><span class="ico"><i data-lucide="zap"></i></span>Input Power (opsional, untuk power rating)</label>
+        <div class="row">
+          <input type="number" id="pin" value="1" step="0.1" min="0">
+          <span class="unit">W</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="stack">
+      <div class="card">
+        <h2><span class="ico"><i data-lucide="circuit-board"></i></span>Circuit Diagram <span class="badge" id="netBadge">Pi</span></h2>
+        <div class="diagram-wrap" id="diagram"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="ico"><i data-lucide="clipboard-list"></i></span>Results</h2>
+        <table class="result" id="results"></table>
+        <div class="note" id="resultNote"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="../assets/rf-attenuator.js"></script>
+</body>
+</html>
