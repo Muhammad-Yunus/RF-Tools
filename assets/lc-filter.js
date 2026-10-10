@@ -407,7 +407,7 @@ else (function () {
     const L = 48, R = 42, T = 14, Bm = 46;
     const pw = W - L - R, ph = H - T - Bm;
     const lx = (f) => L + (Math.log10(f) - Math.log10(fmin)) / (Math.log10(fmax) - Math.log10(fmin)) * pw;
-    // per-curve dB scale (S21 left, S22 right)
+    // per-curve dB scale (S21 left, S11 right)
     const yminL = curves[0] ? curves[0].ymin : -80;
     const yminR = curves[1] ? curves[1].ymin : yminL;
     const lyL = (d) => T + (0 - d) / (0 - yminL) * ph;
@@ -425,7 +425,7 @@ else (function () {
       ctx.globalAlpha = 0.35; ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(L + pw, y); ctx.stroke(); ctx.globalAlpha = 1;
       ctx.textAlign = "right"; ctx.fillText(d + "", L - 6, y);
     }
-    // right ruler labels (S22 scale)
+    // right ruler labels (S11 scale)
     const ysR = step(yminR);
     for (let d = 0; d >= yminR; d -= ysR) {
       const y = lyR(d);
@@ -449,7 +449,7 @@ else (function () {
     ctx.save(); ctx.translate(13, T + ph / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = "center"; ctx.textBaseline = "middle";
     ctx.fillText("S21 (dB)", 0, 0); ctx.restore();
     ctx.save(); ctx.translate(W - 13, T + ph / 2); ctx.rotate(Math.PI / 2); ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.fillText("S22 (dB)", 0, 0); ctx.restore();
+    ctx.fillText("S11 (dB)", 0, 0); ctx.restore();
     ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
     ctx.fillText("Frequency (Hz)", L + pw / 2, H - 6);
     ctx.textAlign = "start";
@@ -558,14 +558,14 @@ else (function () {
     const warn = css.getPropertyValue("--warn").trim() || "#d9b84a";
     const curves = [
       { pts: c21, color: acc, name: "S21", ymin: -80 },
-      { pts: c11, color: warn, name: "S22", ymin: -40 },
+      { pts: c11, color: warn, name: "S11", ymin: -40 },
     ];
     lastChart = { curves, fmin, fmax };
     drawChart($("chart"), curves, fmin, fmax);
     bindChartHover();
     $("chartLegend").innerHTML =
       `<span><span class="dot" style="background:${acc}"></span>S21</span>`
-      + `<span><span class="dot" style="background:${warn}"></span>S22</span>`;
+      + `<span><span class="dot" style="background:${warn}"></span>S11</span>`;
   }
 
   /* --------------------------------------------------- chart hover tip */
