@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RF Attenuator Calculator &mdash; Pi / T</title>
+<script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"></script>
+<style>
+  :root {
+    --primary: #E5E793;
+    --secondary: #8B8D08;
+    --bg: #101108;
+    --panel: #181a0f;
+    --panel-2: #202313;
+    --border: #343826;
+    --text: #eef0e0;
+    --muted: #9fa191;
+    --accent: var(--primary);
+    --accent-2: var(--secondary);
+    --on-accent: #16180a;
+    --warn: #d9b84a;
+    --wire: #dcddc8;
+    --zone: #262a15;
+    --shadow: 0 6px 20px rgba(0,0,0,.45);
+  }
+  html[data-theme="light"] {
+    --bg: #f4f5ec;
+    --panel: #ffffff;
+    --panel-2: #f5f6e6;
+    --border: #d9dcc2;
+    --text: #1b1d10;
+    --muted: #6d6f57;
+    --accent: var(--secondary);
+    --accent-2: var(--primary);
+    --on-accent: #ffffff;
+    --warn: #8a6e0e;
+    --wire: #3a3d22;
+    --zone: #ecefce;
+    --shadow: 0 6px 20px rgba(40,45,10,.10);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.45;
+  }
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 18px 24px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-ico { color: var(--accent); display: inline-flex; }
+  .brand-ico .lucide { width: 26px; height: 26px; }
+  .brand-title { font-size: 18px; font-weight: 700; letter-spacing: .3px; }
+  header .sub { color: var(--muted); font-size: 12px; font-weight: 400; margin-top:2px;}
+  .theme-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--panel); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: 13px;
+  }
+  .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .lucide { width: 1em; height: 1em; display: inline-block; vertical-align: -0.14em; stroke-width: 2; flex: none; }
+  .ico { display: inline-flex; align-items: center; color: var(--accent); }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 22px 24px 60px; }
+
+  .tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+  .tab {
+    flex: 1; text-align: center; padding: 12px; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; font-weight: 600; color: var(--muted);
+    transition: .15s; user-select: none;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--on-accent); background: var(--accent); border-color: var(--accent); }
+  .tab .ico { color: currentColor; }
+  .tab .ico .lucide { width: 22px; height: 22px; }
+  .tab small { display:block; font-weight:400; font-size:11px; opacity:.8; }
+  html[data-theme="light"] .tab.active { color: #fff; }
+
+  .grid { display: grid; grid-template-columns: 360px 1fr; gap: 18px; align-items: start; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; box-shadow: var(--shadow);
+  }
+  .card h2 { display: flex; align-items: center; gap: 7px;
+    font-size: 13px; text-transform: uppercase; letter-spacing: .6px;
+    color: var(--muted); margin: 0 0 14px; font-weight: 600; }
+  .card h2 .ico { color: var(--accent); }
+
+  .field { margin-bottom: 12px; }
+  .field label { display: flex; align-items: center; gap: 6px;
+    font-size: 12.5px; color: var(--muted); margin-bottom: 5px; }
+  .field label .ico { color: var(--accent); }
+  .field .row { display: flex; align-items: center; gap: 8px; }
+  input[type="number"], select {
+    width: 100%; height: 40px; padding: 0 10px; font-size: 14px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--panel-2); color: var(--text);
+    outline: none;
+  }
+  input[type="number"]:focus, select:focus { border-color: var(--accent); }
+  .unit { color: var(--muted); font-size: 13px; min-width: 26px; }
+  .hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  .mode-toggle { display: flex; gap: 6px; margin-bottom: 16px; }
+  .mode-toggle button {
+    flex: 1; padding: 9px 6px; font-size: 12.5px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    border-radius: 8px; border: 1px solid var(--border);
+    background: var(--panel-2); color: var(--muted); font-weight: 600;
+  }
+  .mode-toggle button.active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+
+  .presets-label { display: flex; align-items: center; gap: 5px; font-size: 11px;
+    color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; }
+  .presets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .presets button {
+    padding: 6px 10px; font-size: 12px; border-radius: 20px; cursor: pointer;
+    border: 1px solid var(--border); background: var(--panel-2); color: var(--text);
+  }
+  .presets button:hover { border-color: var(--accent); color: var(--accent); }
+
+  .diagram-wrap { display: flex; justify-content: center; }
+  svg { width: 100%; max-width: 520px; height: auto; }
+  .wire { fill: none; stroke: var(--wire); stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
+  .node { fill: var(--wire); }
+  .rlabel { fill: var(--text); font-size: 13px; font-weight: 600; font-family: "Consolas", monospace; }
+  .rval { fill: var(--accent); font-size: 12px; font-family: "Consolas", monospace; }
+  .port { fill: var(--muted); font-size: 12px; font-weight: 600; }
+  .gnd { fill: none; stroke: var(--wire); stroke-width: 2.4; }
+
+  table.result { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.result td { padding: 8px 6px; border-bottom: 1px solid var(--border); }
+  table.result td:last-child { text-align: right; font-family: "Consolas", monospace; font-weight: 600; }
+  table.result tr:last-child td { border-bottom: none; }
+  .val-acc { color: var(--accent); }
+  .val-warn { color: var(--warn); }
+
+  .badge { display:inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px;
+    background: var(--zone); color: var(--accent); border:1px solid var(--accent); margin-left:6px;}
+  .note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+  .stack { display: grid; gap: 18px; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <span class="brand-ico"><i data-lucide="radio-tower"></i></span>
+    <div>
+      <div class="brand-title">RF Attenuator Calculator</div>
+      <div class="sub">Pi &amp; T (Tee) pad &mdash; design &amp; analyze</div>
+    </div>
+  </div>
+  <button class="theme-btn" id="themeBtn"><i data-lucide="sun"></i><span>Theme</span></button>
+</header>
+
+<main>
+  <div class="tabs">
+    <div class="tab active" data-net="pi"><span class="ico"><i data-lucide="pi"></i></span>Pi Attenuator<small>&pi; pad &mdash; 2 shunt + 1 series</small></div>
+    <div class="tab" data-net="t"><span class="ico"><i data-lucide="git-commit-horizontal"></i></span>T (Tee) Attenuator<small>T pad &mdash; 2 series + 1 shunt</small></div>
+  </div>
+
+  <div class="grid">
+    <!-- INPUT PANEL -->
+    <div class="card">
+      <h2><span class="ico"><i data-lucide="sliders-horizontal"></i></span>Parameters</h2>
+
+      <div class="mode-toggle">
+        <button id="modeDesign" class="active"><i data-lucide="calculator"></i>Design (dB &rarr; R)</button>
+        <button id="modeAnalyze"><i data-lucide="scan-search"></i>Analyze (R &rarr; dB)</button>
+      </div>
+
+      <!-- DESIGN MODE -->
+      <div id="designInputs">
+        <div class="field">
+          <label><span class="ico"><i data-lucide="cable"></i></span>System Impedance (Z&#8320;)</label>
+          <div class="row">
+            <input type="number" id="z0" value="50" step="1" min="1">
+            <span class="unit">&Omega;</span>
+          </div>
+        </div>
+        <div class="field">
+          <label><span class="ico"><i data-lucide="trending-down"></i></span>Attenuation</label>
+          <div class="row">
+            <input type="number" id="attn" value="6" step="0.5" min="0.1">
+            <span class="unit">dB</span>
+          </div>
+          <div class="presets-label"><span class="ico"><i data-lucide="gauge"></i></span>Preset (dB)</div>
+          <div class="presets">
+            <button data-db="1">1</button>
+            <button data-db="2">2</button>
+            <button data-db="3">3</button>
+            <button data-db="4">4</button>
+            <button data-db="6">6</button>
+            <button data-db="10">10</button>
+            <button data-db="20">20</button>
+            <button data-db="30">30</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYZE MODE -->
+      <div id="analyzeInputs" class="hidden">
+        <div class="field">
+          <label><span class="ico"><i data-lucide="minus"></i></span>R series (R1)</label>
+          <div class="row">
+            <input type="number" id="rSeries" value="37.35" step="0.01" min="0.01">
+            <span class="unit">&Omega;</span>
+          </div>
+        </div>
+        <div class="field">
+          <label><span class="ico"><i data-lucide="arrow-down-to-line"></i></span>R shunt (R2)</label>
+          <div class="row">
+            <input type="number" id="rShunt" value="150.48" step="0.01" min="0.01">
+            <span class="unit">&Omega;</span>
+          </div>
+          <div class="hint">Simetris: R2 dipakai di kedua sisi.</div>
+        </div>
+      </div>
+
+      <!-- COMMON -->
+      <div class="field">
+        <label><span class="ico"><i data-lucide="percent"></i></span>Toleransi Resistor</label>
+        <div class="row">
+          <select id="tol">
+            <option value="0">Ideal (0%)</option>
+            <option value="1">&plusmn;1%</option>
+            <option value="2">&plusmn;2%</option>
+            <option value="5" selected>&plusmn;5%</option>
+            <option value="10">&plusmn;10%</option>
+          </select>
+          <span class="unit"></span>
+        </div>
+      </div>
+      <div class="field">
+        <label><span class="ico"><i data-lucide="zap"></i></span>Input Power (opsional, untuk power rating)</label>
+        <div class="row">
+          <input type="number" id="pin" value="1" step="0.1" min="0">
+          <span class="unit">W</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="stack">
+      <div class="card">
+        <h2><span class="ico"><i data-lucide="circuit-board"></i></span>Circuit Diagram <span class="badge" id="netBadge">Pi</span></h2>
+        <div class="diagram-wrap" id="diagram"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="ico"><i data-lucide="clipboard-list"></i></span>Results</h2>
+        <table class="result" id="results"></table>
+        <div class="note" id="resultNote"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+"use strict";
+
+/* ---------- State ---------- */
+const state = {
+  net: "pi",
+  mode: "design",
+};
+
+/* ---------- Math ---------- */
+const Z0_DEFAULT = 50;
+
+function dbToK(db) { return Math.pow(10, db / 20); }
+
+// Design: dB + Z0 -> resistor values
+function designPi(db, z0) {
+  const K = dbToK(db);
+  const series = z0 * (K * K - 1) / (2 * K);
+  const shunt  = z0 * (K + 1) / (K - 1);
+  return { series, shunt };
+}
+function designT(db, z0) {
+  const K = dbToK(db);
+  const series = z0 * (K - 1) / (K + 1);
+  const shunt  = z0 * 2 * K / (K * K - 1);
+  return { series, shunt };
+}
+
+// Analyze: R values -> attenuation (matched, symmetric)
+// A = 1 + Rs/Rp ; K = A + sqrt(A^2 - 1)
+function analyzeRsRp(rs, rp) {
+  const A = 1 + rs / rp;
+  if (A <= 1) return { db: 0, z0c: NaN };
+  const K = A + Math.sqrt(A * A - 1);
+  const db = 20 * Math.log10(K);
+  return { db, K };
+}
+function charZPi(rs, rp) { return Math.sqrt(rs * rp * rp / (rs + 2 * rp)); }
+function charZT(rs, rp)  { return Math.sqrt(rs * (rs + 2 * rp)); }
+
+/* ---------- Power dissipation (matched, source Z0, load Z0) ---------- */
+function powerPi(series, shunt, z0, Pin) {
+  const Vr = Math.sqrt(Pin * z0);          // rms input
+  const rl = (shunt * z0) / (shunt + z0);  // shunt || load
+  const Vout = Vr * rl / (series + rl);
+  const Vmid = Vout;                        // same node
+  const pSer  = Math.pow(Vr - Vmid, 2) / series;
+  const pShIn = Vr * Vr / shunt;
+  const pShOut= Vout * Vout / shunt;
+  return {
+    "Series R1": pSer,
+    "Shunt R2 (in)": pShIn,
+    "Shunt R2 (out)": pShOut,
+  };
+}
+function powerT(series, shunt, z0, Pin) {
+  const Vr = Math.sqrt(Pin * z0);
+  const rTail = shunt + z0;
+  const rPar = (shunt * z0) / (shunt + z0);
+  const Vmid = Vr * rPar / (series + rPar);
+  const Vout = Vmid * z0 / (series + z0);
+  const pSerIn  = Math.pow(Vr - Vmid, 2) / series;
+  const pSerOut = Math.pow(Vmid - Vout, 2) / series;
+  const pShunt  = Vmid * Vmid / shunt;
+  return {
+    "Series R1 (in)": pSerIn,
+    "Series R1 (out)": pSerOut,
+    "Shunt R2": pShunt,
+  };
+}
+function recRating(w) {
+  const opts = [0.0625, 0.125, 0.25, 0.5, 1, 2, 5, 10, 25, 50, 100];
+  for (const o of opts) if (w <= o * 0.75) return o + " W";
+  return "> 100 W (pakai heatsink / banyak paralel)";
+}
+
+/* ---------- SVG build ---------- */
+/* Fixed-size zigzag body so every resistor looks identical regardless of
+   the lead length. Only shrinks when the span is genuinely too short. */
+const RZ = { teeth: 6, seg: 8, amp: 11, minLead: 8 };
+
+function resPoints(len) {
+  const teeth = RZ.teeth, seg = RZ.seg;
+  const bodyFull = teeth * seg;
+  const usable = Math.max(0, len - 2 * RZ.minLead);
+  const scale = usable < bodyFull ? Math.max(0.25, usable / bodyFull) : 1;
+  const bodyLen = bodyFull * scale;
+  const ampV = RZ.amp * scale;
+  const w = bodyLen / teeth;
+  const x0 = (len - bodyLen) / 2;      // body start (centered)
+  const pts = [[0, 0], [x0, 0]];
+  let up = true;
+  for (let i = 0; i < teeth; i++) {
+    pts.push([x0 + w * (i + 0.5), up ? -ampV : ampV]);
+    up = !up;
+  }
+  pts.push([len - x0, 0]);              // body end
+  pts.push([len, 0]);                   // final lead
+  return pts;
+}
+function resPathH(x1, x2, y) {
+  return "M " + resPoints(Math.abs(x2 - x1))
+    .map(p => `${(x1 + p[0]).toFixed(1)} ${(y + p[1]).toFixed(1)}`).join(" L ");
+}
+function resPathV(x, y1, y2) {
+  return "M " + resPoints(Math.abs(y2 - y1))
+    .map(p => `${(x + p[1]).toFixed(1)} ${(y1 + p[0]).toFixed(1)}`).join(" L ");
+}
+function gnd(x, y) {
+  return `<path class="gnd" d="M ${x-12} ${y} L ${x+12} ${y} M ${x-8} ${y+6} L ${x+8} ${y+6} M ${x-4} ${y+12} L ${x+4} ${y+12}"/>`;
+}
+
+function drawPi(d) {
+  const svg = `
+  <svg viewBox="0 0 520 250" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(30,0)">
+    <path class="wire" d="M 15 110 L 70 110"/>
+    <path class="wire" d="M 390 110 L 445 110"/>
+    <path class="wire" d="M 70 110 L 70 130"/>
+    <path class="wire" d="M 70 205 L 70 215"/>
+    <path class="wire" d="M 390 110 L 390 130"/>
+    <path class="wire" d="M 390 205 L 390 215"/>
+    <path class="wire" d="${resPathH(70, 390, 110)}"/>
+    <path class="wire" d="${resPathV(70, 130, 205)}"/>
+    <path class="wire" d="${resPathV(390, 130, 205)}"/>
+    ${gnd(70, 215)} ${gnd(390, 215)}
+    <circle class="node" cx="70" cy="110" r="4"/>
+    <circle class="node" cx="390" cy="110" r="4"/>
+    <text class="port" x="15" y="98">IN</text>
+    <text class="port" x="428" y="98">OUT</text>
+    <text class="rlabel" x="205" y="98" text-anchor="middle">R1</text>
+    <text class="rval" x="205" y="140" text-anchor="middle">${d.seriesTxt}</text>
+    <text class="rlabel" x="52" y="172" text-anchor="end">R2</text>
+    <text class="rval" x="86" y="172" text-anchor="start">${d.shuntTxt}</text>
+    <text class="rlabel" x="372" y="172" text-anchor="end">R2</text>
+    <text class="rval" x="406" y="172" text-anchor="start">${d.shuntTxt}</text>
+    </g>
+  </svg>`;
+  return svg;
+}
+function drawT(d) {
+  const svg = `
+  <svg viewBox="0 0 520 250" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(30,0)">
+    <path class="wire" d="M 15 100 L 90 100"/>
+    <path class="wire" d="M 370 100 L 445 100"/>
+    <path class="wire" d="M 230 100 L 230 130"/>
+    <path class="wire" d="M 230 205 L 230 215"/>
+    <path class="wire" d="${resPathH(90, 210, 100)}"/>
+    <path class="wire" d="M 210 100 L 250 100"/>
+    <path class="wire" d="${resPathH(250, 370, 100)}"/>
+    <path class="wire" d="${resPathV(230, 130, 205)}"/>
+    ${gnd(230, 215)}
+    <circle class="node" cx="230" cy="100" r="4"/>
+    <text class="port" x="15" y="88">IN</text>
+    <text class="port" x="428" y="88">OUT</text>
+    <text class="rlabel" x="150" y="88" text-anchor="middle">R1</text>
+    <text class="rval" x="150" y="130" text-anchor="middle">${d.seriesTxt}</text>
+    <text class="rlabel" x="310" y="88" text-anchor="middle">R1</text>
+    <text class="rval" x="310" y="130" text-anchor="middle">${d.seriesTxt}</text>
+    <text class="rlabel" x="213" y="172" text-anchor="end">R2</text>
+    <text class="rval" x="248" y="172" text-anchor="start">${d.shuntTxt}</text>
+    </g>
+  </svg>`;
+  return svg;
+}
+
+/* ---------- Format ---------- */
+function fmtOhm(v) {
+  if (!isFinite(v)) return "&infin;";
+  if (v >= 1000) return (v / 1000).toFixed(3) + " k&Omega;";
+  if (v < 1) return v.toFixed(3) + " &Omega;";
+  return v.toFixed(2) + " &Omega;";
+}
+function fmtW(w) {
+  if (w >= 1) return w.toFixed(3) + " W";
+  return (w * 1000).toFixed(1) + " mW";
+}
+
+/* ---------- Render ---------- */
+function render() {
+  const net = state.net;
+  const tol = parseFloat(document.getElementById("tol").value) || 0;
+  const Pin = parseFloat(document.getElementById("pin").value) || 0;
+  const badge = document.getElementById("netBadge");
+  badge.textContent = net === "pi" ? "Pi (\u03C0)" : "T (Tee)";
+
+  let series, shunt, db, z0c, inputZ, rows = [], note = "";
+
+  if (state.mode === "design") {
+    const z0 = parseFloat(document.getElementById("z0").value) || Z0_DEFAULT;
+    const attn = parseFloat(document.getElementById("attn").value) || 0;
+    const r = net === "pi" ? designPi(attn, z0) : designT(attn, z0);
+    series = r.series; shunt = r.shunt;
+    db = attn; z0c = z0; inputZ = z0;
+    note = `Desain tercocok (matched) pada Z&#8320; = ${z0} &Omega;. Nilai dibulatkan ke resistor standar terdekat akan menggeser atenuasi.`;
+  } else {
+    series = parseFloat(document.getElementById("rSeries").value) || 1;
+    shunt  = parseFloat(document.getElementById("rShunt").value) || 1;
+    const a = analyzeRsRp(series, shunt);
+    db = a.db;
+    z0c = net === "pi" ? charZPi(series, shunt) : charZT(series, shunt);
+    inputZ = z0c;
+    note = `Dianalisis dari nilai R (asumsi simetris). Impedansi karakteristik = ${fmtOhm(z0c)}.`;
+  }
+
+  // Diagram
+  const dv = {
+    seriesTxt: fmtOhm(series).replace(/<\/?[^>]+>/g, ""),
+    shuntTxt: fmtOhm(shunt).replace(/<\/?[^>]+>/g, ""),
+  };
+  document.getElementById("diagram").innerHTML = net === "pi" ? drawPi(dv) : drawT(dv);
+
+  // Results
+  rows.push(["Atenuasi", `<span class="val-acc">${db.toFixed(2)} dB</span>`]);
+  rows.push(["R series (R1)", fmtOhm(series)]);
+  rows.push(["R shunt (R2)", fmtOhm(shunt)]);
+  rows.push(["Z&#8320; karakteristik", fmtOhm(z0c)]);
+
+  // Tolerance spread
+  if (tol > 0) {
+    const sHi = series * (1 + tol / 100), sLo = series * (1 - tol / 100);
+    const pHi = shunt * (1 + tol / 100), pLo = shunt * (1 - tol / 100);
+    const dbMax = analyzeRsRp(sHi, pLo).db;
+    const dbMin = analyzeRsRp(sLo, pHi).db;
+    rows.push(["Atenuasi (worst-case)", `<span class="val-warn">${dbMin.toFixed(2)} &ndash; ${dbMax.toFixed(2)} dB</span>`]);
+  }
+
+  // Power
+  if (Pin > 0 && state.mode === "design") {
+    const pw = net === "pi" ? powerPi(series, shunt, z0c, Pin) : powerT(series, shunt, z0c, Pin);
+    let maxW = 0, maxName = "";
+    for (const [k, v] of Object.entries(pw)) {
+      if (v > maxW) { maxW = v; maxName = k; }
+      rows.push([`P(${k})`, fmtW(v)]);
+    }
+    rows.push(["Rating rekomendasi", `<span class="val-acc">${recRating(maxW)}</span> (${maxName})`]);
+    const pOut = Pin / Math.pow(10, db / 10);
+    rows.push(["Output power", fmtW(pOut)]);
+  }
+
+  document.getElementById("results").innerHTML =
+    rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("");
+  document.getElementById("resultNote").innerHTML = note;
+}
+
+/* ---------- Events ---------- */
+document.querySelectorAll(".tab").forEach(t => {
+  t.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+    t.classList.add("active");
+    state.net = t.dataset.net;
+    render();
+  });
+});
+
+const modeDesign = document.getElementById("modeDesign");
+const modeAnalyze = document.getElementById("modeAnalyze");
+modeDesign.addEventListener("click", () => {
+  state.mode = "design";
+  modeDesign.classList.add("active"); modeAnalyze.classList.remove("active");
+  document.getElementById("designInputs").classList.remove("hidden");
+  document.getElementById("analyzeInputs").classList.add("hidden");
+  render();
+});
+modeAnalyze.addEventListener("click", () => {
+  state.mode = "analyze";
+  modeAnalyze.classList.add("active"); modeDesign.classList.remove("active");
+  document.getElementById("analyzeInputs").classList.remove("hidden");
+  document.getElementById("designInputs").classList.add("hidden");
+  render();
+});
+
+document.querySelectorAll(".presets button").forEach(b => {
+  b.addEventListener("click", () => {
+    document.getElementById("attn").value = b.dataset.db;
+    render();
+  });
+});
+
+["z0", "attn", "rSeries", "rShunt", "tol", "pin"].forEach(id => {
+  document.getElementById(id).addEventListener("input", render);
+});
+document.getElementById("tol").addEventListener("change", render);
+
+const themeBtn = document.getElementById("themeBtn");
+themeBtn.addEventListener("click", () => {
+  const html = document.documentElement;
+  const toDark = html.dataset.theme !== "dark";
+  html.dataset.theme = toDark ? "dark" : "light";
+  themeBtn.innerHTML = `<i data-lucide="${toDark ? "sun" : "moon"}"></i><span>Theme</span>`;
+  if (window.lucide) lucide.createIcons();
+});
+
+render();
+if (window.lucide) lucide.createIcons();
+</script>
+</body>
+</html>
