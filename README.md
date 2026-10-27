@@ -5,6 +5,7 @@
 Saat ini tersedia:
 - **RF Attenuator** — nilai resistor pad **Pi (π)** & **T (Tee)** lengkap dengan diagram, toleransi, dan power rating.
 - **RF LC Filter Designer** — filter **Lowpass / Bandpass / Bandstop** (Butterworth & Chebyshev) dengan skema ladder, tabel komponen, dan grafik respons |S21|/|S11|.
+- **Toroid Inductor Calculator** — hitung jumlah lilitan & panjang kawat untuk core toroid (data A<sub>L</sub> 16 core dari [toroids.info](https://toroids.info/)), check packing per lapisan, plus saran core & AWG terbaik.
 
 ## Badges
 
@@ -41,6 +42,12 @@ Saat ini tersedia:
 - **Tabel komponen** — nilai eksak atau dibulatkan ke deret **E24**.
 - **Grafik respons** — kurva |S21| dan |S11| (dB) vs frekuensi (skala log), dihitung via matriks ABCD.
 
+### Toroid Inductor
+- **16 core toroid** — µ-metal (T25–T200 type 2) & ferrite (T50-6, T80-6, FT50/140/240-43/31), dengan A<sub>L</sub>, dimensi OD/ID/ht, dan rentang frekuensi optimal.
+- **Pilih kawat enamel (AWG 10–36)** + rasio *packing/fill* untuk cek muat tidaknya lilitan di permukaan inti.
+- **Hasil**: jumlah lilitan (N dibulatkan ke atas), induktansi aktual + deviasi, panjang kawat, dan indikator packing.
+- **Saran otomatis** — semua core di-ranking untuk target yang sama (yang muat + deviasi terkecil + core terkecil), plus rekomendasi AWG bila kombinasi saat ini sesak.
+
 ### Umum
 - **Tema gelap/terang** — flat & modern, palet primary `#E5E793` / secondary `#8B8D08`.
 - **Ikon Lucide** pada menu, field, dan bagian penting.
@@ -65,10 +72,13 @@ python -m http.server 8000
 index.html                  # landing page (daftar tool)
 app/rf-attenuator.html      # halaman RF Attenuator
 app/lc-filter.html          # halaman RF LC Filter
+app/toroid-inductor.html    # halaman Toroid Inductor Calculator
 assets/style.css            # tema + gaya bersama
 assets/nav.js               # navbar + theme toggle (injected)
 assets/rf-attenuator.js     # logika attenuator
 assets/lc-filter.js         # logika filter LC (prototipe, transform, S-param, UI)
+assets/data/toroids.js      # data A_L + tabel AWG untuk kalkulator induktor
+assets/toroid-inductor.js   # logika kalkulator induktor toroid
 .github/workflows/deploy.yml
 ```
 
@@ -116,6 +126,14 @@ g_k = 4·a_{k−1}·a_k / (b_{k−1}·g_{k−1})
 Transformasi LP → BP/BS: `ω₀ = √(ω₁·ω₂)`, `Δ = (ω₂ − ω₁)/ω₀`. Resonator disusun
 sebagai LC seri (arm seri) atau LC paralel (arm shunt). Analisis respons memakai
 matriks ABCD tiap cabang lalu dikonversi ke S-parameter.
+
+### Toroid Inductor
+
+Induktansi inti toroid: `L(uH) = A_L · N² / 1000`, sehingga jumlah lilitan minimal
+`N = ceil( sqrt( L_target(uH) · 1000 / A_L ) )` (dibulatkan ke atas agar
+induktansi ≥ target). Estimasi packing: lilitan per lapisan ≈
+π·(OD+ID)/2 / Ø_kawat_terselubung, jumlah lapisan ≈ tinggi inti / Ø_kawat;
+lilitan layak = hasil kali kedua dikali rasio fill.
 
 ## Tech Stack
 
