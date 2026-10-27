@@ -91,7 +91,7 @@
 
   /* ----------------------------------------------------------------- UI */
   var UNIT = { H: 1e6, mH: 1e3, uH: 1, nH: 0.001 };
-  var state = { toroid: "T50-2", lval: "10", lunit: "uH", awg: 30, fill: 75 };
+  var state = { toroid: "T37-2", lval: "840", lunit: "nH", awg: 24, fill: 75 };
 
   function $(id) { return document.getElementById(id); }
   function findCore(id) {
@@ -148,17 +148,24 @@
 
     var target_uH = readVal("lval", 0) * UNIT[state.lunit];
 
+    function vizUpdate(d) {
+      window.__toroidVizPending = d;                      // consumed on module init
+      if (typeof ToroidViz !== "undefined") ToroidViz.update(d);
+    }
+
     /* --- preview --- */
     $("coreMeta").innerHTML =
       "<tr><td>Core</td><td><b>" + core.name + "</b></td></tr>"
       + "<tr><td>Material</td><td>" + core.mat + "</td></tr>"
       + "<tr><td>A<sub>L</sub></td><td>" + core.al + " µH·N² (per 1000)</td></tr>"
-      + "<tr><td>Rentang optimal</td><td>" + core.freq + "</td></tr>"
-      + "<tr><td>Dimensi (OD/ID/ht)</td><td>" + core.od + " / " + core.id + " / " + core.ht + " mm</td></tr>"
-      + "<tr><td>Warna kode</td><td>" + core.color + "</td></tr>";
+      + "<tr><td>Optimal range</td><td>" + core.freq + "</td></tr>"
+      + "<tr><td>Dimensions (OD/ID/ht)</td><td>" + core.od + " / " + core.id + " / " + core.ht + " mm</td></tr>"
+      + "<tr><td>Color code</td><td>" + core.color + "</td></tr>";
+
+    vizUpdate({ core: core, awg: null, N: null });
 
     if (!(target_uH > 0)) {
-      $("resBox").innerHTML = '<div class="note">Masukkan nilai induktansi target &gt; 0.</div>';
+      $("resBox").innerHTML = '<div class="note">Enter a target inductance &gt; 0.</div>';
       $("sugTable").innerHTML = "";
       $("indNote").textContent = "";
       return;
@@ -168,28 +175,30 @@
     var pack = r.pack;
     var pct = pack.usable > 0 ? Math.min(100, r.N / pack.usable * 100) : 110;
 
+    vizUpdate({ core: core, awg: awg, N: r.N, over: !r.fits });
+
     var html = "";
-    html += '<div class="res-hero">' + r.N + '<span class="res-sub"> lilitan (N)</span></div>';
+    html += '<div class="res-hero">' + r.N + '<span class="res-sub"> turns (N)</span></div>';
     html += '<table class="result" style="margin-top:10px">'
-      + "<tr><td>Induktansi aktual (N bulat)</td><td><b>" + fmtInd(r.Lact_uH) + "</b></td></tr>"
-      + "<tr><td>Deviasi dari target</td><td>" + (r.dev_pct >= 0 ? "+" : "") + r.dev_pct.toFixed(1) + " %</td></tr>"
-      + "<tr><td>Kawat terpakai</td><td><b>" + r.wireLen_m.toFixed(2) + " m</b> (≈ " + trim3(r.wireLen_m * 100) + " cm)</td></tr>"
-      + "<tr><td>Lilitan / lapisan</td><td>" + pack.npl + " × " + pack.layers + " lapisan</td></tr>"
-      + "<tr><td>Kapasitas @fill " + Math.round(state.fill) + "%</td><td>" + pack.usable + " lilitan</td></tr>"
+      + "<tr><td>Actual inductance (N rounded)</td><td><b>" + fmtInd(r.Lact_uH) + "</b></td></tr>"
+      + "<tr><td>Deviation from target</td><td>" + (r.dev_pct >= 0 ? "+" : "") + r.dev_pct.toFixed(1) + " %</td></tr>"
+      + "<tr><td>Wire used</td><td><b>" + r.wireLen_m.toFixed(2) + " m</b> (≈ " + trim3(r.wireLen_m * 100) + " cm)</td></tr>"
+      + "<tr><td>Turns per layer</td><td>" + pack.npl + " × " + pack.layers + " layers</td></tr>"
+      + "<tr><td>Capacity @fill " + Math.round(state.fill) + "%</td><td>" + pack.usable + " turns</td></tr>"
       + "</table>";
-    html += '<div class="pack-track" title="N terpakai vs kapasitas"><div class="pack-fill' + (r.fits ? "" : " over") + '" style="width:' + (Math.min(pct, 100)) + '%"></div></div>'
+    html += '<div class="pack-track" title="Turns used vs capacity"><div class="pack-fill' + (r.fits ? "" : " over") + '" style="width:' + (Math.min(pct, 100)) + '%"></div></div>'
       + '<div class="hint">' + (r.fits
-          ? "✓ Semua " + r.N + " lilitan muat di permukaan inti (kawat AWG " + state.awg + ", fill " + Math.round(state.fill) + "%)."
-          : "✗ " + r.N + " lilitan melebihi kapasitas " + pack.usable + " — ganti core lebih besar atau kawat lebih tipis (lihat saran di bawah).") + "</div>";
+          ? "OK: " + r.N + " turns fit on the core surface (AWG " + state.awg + " wire, fill " + Math.round(state.fill) + "%)."
+                     : "Over: " + r.N + " turns exceed the " + pack.usable + "-turn capacity — use a larger core or thinner wire (see suggestions below).") + "</div>";
     $("resBox").innerHTML = html;
 
     /* --- suggestions --- */
     var rows = suggest(TOROIDS, target_uH, awg, state.fill);
-    var shtml = "<thead><tr><th>Core</th><th>N</th><th>L aktual</th><th>Deviasi</th><th>Muat</th><th>OD</th></tr><tbody>";
+    var shtml = "<thead><tr><th>Core</th><th>N</th><th>Actual L</th><th>Dev.</th><th>Fits</th><th>OD</th></tr><tbody>";
     for (var k = 0; k < rows.length; k++) {
       var s = rows[k];
       var cur = s.core.code === core.code;
-      var status = !s.ok ? "—" : (s.fits ? "✓ muat" : "✗ sesak");
+      var status = !s.ok ? "—" : (s.fits ? "fits" : "tight");
       shtml += '<tr' + (cur ? ' class="cur"' : "") + ">"
         + "<td>" + s.core.name + (cur ? " ◂" : "") + "</td>"
         + "<td>" + (s.ok ? s.N : "—") + "</td>"
@@ -204,18 +213,18 @@
     /* --- notes --- */
     var notes = [];
     if (r.N === 1 && r.dev_pct > 50) {
-      notes.push("A<sub>L</sub> core ini relatif besar: 1 lilitan saja sudah melewati target. Cari core A<sub>L</sub> lebih kecil atau terima overshoot.");
+      notes.push("This core has a relatively large A<sub>L</sub>: even a single turn already exceeds the target. Look for a smaller-A<sub>L</sub> core, or accept the overshoot.");
     }
     if (!r.fits) {
       var cand = null;
       for (var m = 0; m < rows.length; m++) { if (rows[m].ok && rows[m].fits && rows[m].core.code !== core.code) { cand = rows[m]; break; } }
       notes.push(cand
-        ? "Saran: gunakan <b>" + cand.core.name + "</b> dengan " + cand.N + " lilitan (" + fmtInd(cand.Lact_uH) + ") — kawat AWG " + state.awg + " masih muat."
-        : "Packing penuh pada semua core daftar — naikkan fill ratio atau kurangi target L.");
+        ? "Suggestion: use a <b>" + cand.core.name + "</b> with " + cand.N + " turns (" + fmtInd(cand.Lact_uH) + ") — AWG " + state.awg + " wire still fits."
+        : "Packing is full on every listed core — raise the fill ratio or lower the target L.");
     } else if (pct > 85) {
-      notes.push("Keritingan padat (>85% kapasitas) — Q akan turun sedikit; wajar untuk matching-network / RFI choke.");
+      notes.push("Tight winding (>85% of capacity) — Q will drop slightly; acceptable for matching networks / RFI chokes.");
     }
-    notes.push("Nilai A<sub>L</sub> terukur bisa menyimpang ±5–20% dari katalog; ukur ulang L setelah melilit bila presisi penting.");
+    notes.push("Measured A<sub>L</sub> can deviate ±5–20% from the catalogue; re-measure L after winding if precision matters.");
     $("indNote").innerHTML = notes.map(function (n) { return "• " + n; }).join("<br>");
   }
 

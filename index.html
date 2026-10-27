@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="dark">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RF Tools &mdash; Kalkulator RF untuk Engineer</title>
+<title>RF Tools &mdash; RF Calculators for Engineers</title>
 <script>try{var t=localStorage.getItem("rf-theme");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"></script>
 <link rel="stylesheet" href="assets/style.css">
@@ -14,48 +14,48 @@
 <main>
   <section class="hero">
     <h1><span class="ico"><i data-lucide="radio-tower"></i></span> RF Tools</h1>
-    <p>Kumpulan kalkulator RF praktis untuk engineer &mdash; attenuator, filter LC, dan lainnya.
-       Semua berjalan langsung di browser, tanpa server.</p>
+    <p>A practical collection of RF calculators for engineers &mdash; attenuator, LC filter, and more.
+       Everything runs directly in the browser, no server required.</p>
   </section>
 
   <section class="cards">
     <a class="tool-card" href="app/rf-attenuator.html">
       <div class="tool-card-media" data-media="rf-attenuator">
-        <img src="assets/img/rf-attenuator.png" alt="Pratinjau kalkulator RF Attenuator">
+        <img src="assets/img/rf-attenuator.png" alt="RF Attenuator calculator preview">
       </div>
       <div class="tool-card-body">
         <h3><span class="ico"><i data-lucide="gauge"></i></span> RF Attenuator</h3>
-        <p>Desain &amp; analisis Pi (&pi;) dan T (Tee) pad. Hitung nilai resistor, toleransi worst-case, dan power rating.</p>
+        <p>Design &amp; analyze Pi (&pi;) and T (Tee) pads. Compute resistor values, worst-case tolerance, and power rating.</p>
         <div class="tags"><span class="tag">Pi pad</span><span class="tag">T pad</span><span class="tag">Design &amp; Analyze</span></div>
       </div>
     </a>
 
     <a class="tool-card" href="app/lc-filter.html">
       <div class="tool-card-media" data-media="lc-filter">
-        <img src="assets/img/rf-filter.png" alt="Pratinjau desainer RF LC Filter">
+        <img src="assets/img/rf-filter.png" alt="RF LC Filter designer preview">
       </div>
       <div class="tool-card-body">
         <h3><span class="ico"><i data-lucide="filter"></i></span> RF LC Filter</h3>
-        <p>Desain filter LC: Lowpass, Bandpass, Bandstop. Butterworth, Chebyshev, Elliptic + respons S21/S11.</p>
+        <p>Design LC filters: Lowpass, Bandpass, Bandstop. Butterworth, Chebyshev, Elliptic + S21/S11 response.</p>
         <div class="tags"><span class="tag">Lowpass</span><span class="tag">Bandpass</span><span class="tag">Bandstop</span><span class="tag">S-param</span></div>
       </div>
     </a>
 
     <a class="tool-card" href="app/toroid-inductor.html">
       <div class="tool-card-media" data-media="inductor">
-        <i data-lucide="magnet"></i>
+        <img src="assets/img/inductor_calc.png" alt="Toroid Inductor Calculator preview">
       </div>
       <div class="tool-card-body">
-        <h3><span class="ico"><i data-lucide="magnet"></i></span> Toroid Inductor</h3>
-        <p>Hitung jumlah lilitan &amp; panjang kawat pada core toroid, plus saran core &amp; AWG terbaik dari target Henry.</p>
-        <div class="tags"><span class="tag">Lilitan</span><span class="tag">AWG</span><span class="tag">Saran core</span></div>
+        <h3><span class="ico"><i data-lucide="magnet"></i></span> Toroid Inductor Calculator</h3>
+        <p>Compute turns count &amp; wire length on a toroid core, plus suggestion alternative core &amp; wire.</p>
+        <div class="tags"><span class="tag">Turns</span><span class="tag">AWG</span><span class="tag">Core pick</span></div>
       </div>
     </a>
   </section>
 </main>
 
 <footer class="site">
-  <span>RF Tools &mdash; frontend-only, berjalan sepenuhnya di browser.</span>
+  <span>RF Tools &mdash; frontend-only, runs entirely in the browser.</span>
   <a href="https://github.com/Muhammad-Yunus/RF-Tools" target="_blank" rel="noopener">GitHub</a>
 </footer>
 

@@ -20,6 +20,7 @@ var TOROIDS = [
   { code:"T130-2", name:"T130-2",  al:11.0, od:33.0,  id:19.8,  ht:11.1,  mat:"µ-metal (type 2)",  color:"Red / Clear",   freq:"250 kHz – 10 MHz", class:"u-metal" },
   { code:"T200-2", name:"T200-2",  al:12.0, od:50.8,  id:31.8,  ht:14.0,  mat:"µ-metal (type 2)",  color:"Red / Clear",   freq:"250 kHz – 10 MHz", class:"u-metal" },
   { code:"T50-6",  name:"T50-6",   al:4.0,  od:12.7,  id:7.70,  ht:4.83,  mat:"ferrite (type 6)",  color:"Yellow / Clear",freq:"3 – 40 MHz",        class:"ferrite" },
+  { code:"T37-6",  name:"T37-6",   al:3.0,  od:9.53,  id:5.21,  ht:3.25,  mat:"ferrite (type 6)",  color:"Yellow / Clear",freq:"3 – 40 MHz",        class:"ferrite" },
   { code:"T80-6",  name:"T80-6",   al:4.5,  od:20.2,  id:12.6,  ht:6.35,  mat:"ferrite (type 6)",  color:"Yellow / Clear",freq:"3 – 40 MHz",        class:"ferrite" },
   { code:"FT50-43", name:"FT50-43",  al:440,  od:12.7,  id:7.15,  ht:4.9,   mat:"ferrite 43",      color:"Shiny black",   freq:"5 – 400 MHz",       class:"ferrite" },
   { code:"FT140-43",name:"FT140-43",al:885,  od:35.55, id:23.0,  ht:12.7,  mat:"ferrite 43",      color:"Shiny black",   freq:"5 – 400 MHz",       class:"ferrite" },

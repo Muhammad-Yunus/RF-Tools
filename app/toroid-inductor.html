@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="dark">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Toroid Inductor Calculator &mdash; Hitung Lilitan &amp; Saran Core | RF Tools</title>
+<title>Toroid Inductor Calculator &mdash; Turns Count &amp; Core Suggestions | RF Tools</title>
 <script>try{var t=localStorage.getItem("rf-theme");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 <script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"></script>
 <link rel="stylesheet" href="../assets/style.css">
@@ -14,8 +14,8 @@
 <main>
   <div class="page-head">
     <h1><span class="ico"><i data-lucide="magnet"></i></span> Toroid Inductor Calculator</h1>
-    <p>Pilih core toroid &amp; kawat enamel, tentukan target induktansi &mdash; hitung jumlah lilitan,
-       panjang kawat, dan saran core terbaik (data A<sub>L</sub> dari <a href="https://toroids.info/" target="_blank" rel="noopener">toroids.info</a>).</p>
+    <p>Pick a toroid core &amp; enamel wire, set your target inductance &mdash; compute the turns count,
+       wire length, and best core suggestions (A<sub>L</sub> data from <a href="https://toroids.info/" target="_blank" rel="noopener">toroids.info</a>).</p>
   </div>
 
   <div class="grid">
@@ -32,19 +32,19 @@
       </div>
 
       <div class="field">
-        <label><span class="ico"><i data-lucide="cable"></i></span>Kawat Enamel (AWG)</label>
+        <label><span class="ico"><i data-lucide="cable"></i></span>Enamel Wire (AWG)</label>
         <div class="row">
           <select id="awg"></select>
         </div>
       </div>
 
       <div class="field">
-        <label><span class="ico"><i data-lucide="target"></i></span>Target Induktansi</label>
+        <label><span class="ico"><i data-lucide="target"></i></span>Target Inductance</label>
         <div class="row">
-          <input type="number" id="lval" value="10" step="any" min="0">
+          <input type="number" id="lval" value="840" step="any" min="0">
           <select id="lunit">
-            <option value="nH">nH</option>
-            <option value="uH" selected>µH</option>
+            <option value="nH" selected>nH</option>
+            <option value="uH">µH</option>
             <option value="mH">mH</option>
             <option value="H">H</option>
           </select>
@@ -57,19 +57,27 @@
           <input type="range" id="fill" value="75" min="30" max="95" step="5">
           <span class="unit"><b id="fillLabel">75</b>%</span>
         </div>
-        <div class="hint">Berapa bagian permukaan inti yang boleh terisi lilitan (sisa untuk pigtail &amp; clearance).</div>
+        <div class="hint">What fraction of the core surface may be wound (the rest is kept for pigtail &amp; clearance).</div>
       </div>
     </div>
 
     <!-- OUTPUT -->
     <div class="stack">
       <div class="card">
-        <h2><span class="ico"><i data-lucide="clipboard-list"></i></span>Hasil (Lilitan &amp; Packing)</h2>
+        <h2><span class="ico"><i data-lucide="clipboard-list"></i></span>Results (Turns &amp; Packing)</h2>
         <div id="resBox"></div>
       </div>
 
       <div class="card">
-        <h2><span class="ico"><i data-lucide="sparkles"></i></span>Saran Core &amp; Kawat</h2>
+        <h2><span class="ico"><i data-lucide="box"></i></span>3D Winding Preview</h2>
+        <div id="vizWrap">
+          <div id="vizBox"><div class="viz-hint">drag to rotate · scroll to zoom</div></div>
+        </div>
+        <div class="viz-cap" id="vizCap"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="ico"><i data-lucide="sparkles"></i></span>Core &amp; Wire Suggestions</h2>
         <div class="table-scroll"><table class="result" id="sugTable"></table></div>
         <div class="note" id="indNote"></div>
       </div>
@@ -88,9 +96,23 @@
 .sugTable tr.cur td{background:var(--zone)}
 .table-scroll{overflow-x:auto}
 #sugTable td,#sugTable th{white-space:nowrap}
+#vizWrap{position:relative;height:320px}
+#vizBox{position:absolute;inset:0;background:var(--panel-2);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+#vizBox canvas{display:block;width:100%;height:100%}
+.viz-hint{position:absolute;top:8px;left:10px;font-size:10.5px;color:var(--muted);letter-spacing:.3px;pointer-events:none;z-index:2}
+.viz-cap{margin-top:8px;font-size:12px;color:var(--muted)}
+.viz-cap b{color:var(--accent);font-weight:600}
+.viz-fallback{display:grid;place-items:center;height:100%;color:var(--muted);font-size:13px;text-align:center;padding:0 14px}
 </style>
 
 <script src="../assets/data/toroids.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+<script type="module" src="../assets/toroid-viz.js"></script>
 <script src="../assets/toroid-inductor.js"></script>
 </body>
 </html>

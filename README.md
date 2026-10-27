@@ -5,7 +5,7 @@
 Saat ini tersedia:
 - **RF Attenuator** — nilai resistor pad **Pi (π)** & **T (Tee)** lengkap dengan diagram, toleransi, dan power rating.
 - **RF LC Filter Designer** — filter **Lowpass / Bandpass / Bandstop** (Butterworth & Chebyshev) dengan skema ladder, tabel komponen, dan grafik respons |S21|/|S11|.
-- **Toroid Inductor Calculator** — hitung jumlah lilitan & panjang kawat untuk core toroid (data A<sub>L</sub> 16 core dari [toroids.info](https://toroids.info/)), check packing per lapisan, plus saran core & AWG terbaik.
+- **Toroid Inductor Calculator** — computes turns count & wire length for a toroid core (A<sub>L</sub> data for 17 cores from [toroids.info](https://toroids.info/)), checks packing per layer, renders an interactive 3D winding preview (Three.js), and suggests alternative cores & wires.
 
 ## Badges
 
@@ -43,10 +43,10 @@ Saat ini tersedia:
 - **Grafik respons** — kurva |S21| dan |S11| (dB) vs frekuensi (skala log), dihitung via matriks ABCD.
 
 ### Toroid Inductor
-- **16 core toroid** — µ-metal (T25–T200 type 2) & ferrite (T50-6, T80-6, FT50/140/240-43/31), dengan A<sub>L</sub>, dimensi OD/ID/ht, dan rentang frekuensi optimal.
-- **Pilih kawat enamel (AWG 10–36)** + rasio *packing/fill* untuk cek muat tidaknya lilitan di permukaan inti.
-- **Hasil**: jumlah lilitan (N dibulatkan ke atas), induktansi aktual + deviasi, panjang kawat, dan indikator packing.
-- **Saran otomatis** — semua core di-ranking untuk target yang sama (yang muat + deviasi terkecil + core terkecil), plus rekomendasi AWG bila kombinasi saat ini sesak.
+- **17 toroid cores** — µ-metal (T25–T200 type 2) & ferrite (T37-6, T50-6, T80-6, FT50/140/240-43/31), with A<sub>L</sub>, OD/ID/ht dimensions, and optimal frequency range.
+- **Pick enamel wire (AWG 10–36)** + a *packing/fill* ratio to check whether the winding fits on the core surface.
+- **Results**: turns count (N rounded up), actual inductance + deviation, wire length, and a packing indicator.
+- **Automatic suggestions** — all cores ranked for the same target (best fit + smallest deviation + smallest core), plus an AWG recommendation if the current combination is tight.
 
 ### Umum
 - **Tema gelap/terang** — flat & modern, palet primary `#E5E793` / secondary `#8B8D08`.
@@ -129,11 +129,11 @@ matriks ABCD tiap cabang lalu dikonversi ke S-parameter.
 
 ### Toroid Inductor
 
-Induktansi inti toroid: `L(uH) = A_L · N² / 1000`, sehingga jumlah lilitan minimal
-`N = ceil( sqrt( L_target(uH) · 1000 / A_L ) )` (dibulatkan ke atas agar
-induktansi ≥ target). Estimasi packing: lilitan per lapisan ≈
-π·(OD+ID)/2 / Ø_kawat_terselubung, jumlah lapisan ≈ tinggi inti / Ø_kawat;
-lilitan layak = hasil kali kedua dikali rasio fill.
+Toroid core inductance: `L(uH) = A_L · N² / 1000`, so the minimum turns count is
+`N = ceil( sqrt( L_target(uH) · 1000 / A_L ) )` (rounded up so that
+inductance ≥ target). Packing estimate: turns per layer ≈
+π·(OD+ID)/2 / Ø_insulated_wire, number of layers ≈ core height / Ø_wire;
+usable turns = the product of the two multiplied by the fill ratio.
 
 ## Tech Stack
 
