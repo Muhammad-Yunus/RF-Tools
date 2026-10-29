@@ -558,13 +558,13 @@ function smithSVG(sols, sel, ZL, Zt, Z0, f0) {
 
   // --- labels (OUTSIDE the clipped group) ---
   let labSVG = "";
-  // r circles: center on real axis, label above the circle
+  // r circles: center on real axis, label well above the circle (outside unit boundary)
   for (const r of S_R) {
     if (r === 0) continue;
     const o = rCircle(r);
-    // Position: above circle on real axis, outside boundary
+    // Position well above the unit circle boundary
     const lx = o.c.toFixed(2);
-    const ly = (62 - o.R - 4).toFixed(2);
+    const ly = "-3.00";  // Fixed position well outside the circle
     labSVG += `<text x="${lx}" y="${ly}" fill="${labelCol}" stroke="none" font-family="Arial,sans-serif" font-size="4" text-anchor="middle">r=${r}</text>`;
   }
   // x arcs: label at the point where arc meets the outer unit circle (upper half, y<62)
