@@ -556,41 +556,56 @@ function smithSVG(sols, sel, ZL, Zt, Z0, f0) {
     `<circle cx="${nz2xy(pL).sx.toFixed(2)}" cy="${nz2xy(pL).sy.toFixed(2)}" r="2.4" fill="#f59e0b"/>` +
     `<circle cx="${nz2xy(pT).sx.toFixed(2)}" cy="${nz2xy(pT).sy.toFixed(2)}" r="2.4" fill="#22c55e"/>`;
 
-  // --- labels ---
+  // --- labels (OUTSIDE the clipped group) ---
   let labSVG = "";
   // r circles: center on real axis, label above the circle
-  for (const r of S_R) { const o = rCircle(r); labSVG += `<text x="${o.c.toFixed(2)}" y="${(62 - o.R - 2).toFixed(2)}" fill="${labelCol}" stroke="none" font-family="Arial,sans-serif" font-size="4" text-anchor="middle">r=${r}</text>`; }
+  for (const r of S_R) {
+    if (r === 0) continue;
+    const o = rCircle(r);
+    // Position: above circle on real axis, outside boundary
+    const lx = o.c.toFixed(2);
+    const ly = (62 - o.R - 4).toFixed(2);
+    labSVG += `<text x="${lx}" y="${ly}" fill="${labelCol}" stroke="none" font-family="Arial,sans-serif" font-size="4" text-anchor="middle">r=${r}</text>`;
+  }
   // x arcs: label at the point where arc meets the outer unit circle (upper half, y<62)
   for (const x of S_X) {
     // z = j*x => Gamma = (jx-1)/(jx+1), at the unit circle point
     const gr = (x * x - 1) / (x * x + 1);
     const gi = 2 * x / (x * x + 1);
-    const lx = (62 + 58 * gr).toFixed(2);
-    const ly = (62 - 58 * gi - 2).toFixed(2);
-    labSVG += `<text x="${lx}" y="${ly}" fill="${labelCol}" stroke="none" font-family="Arial,sans-serif" font-size="4" text-anchor="middle">x=${x}</text>`;
+    // Position ON the unit circle boundary, then offset outward by 6 units
+    const bx = 62 + 62 * gr;
+    const by = 62 - 62 * gi;
+    const dx = bx - 62, dy = 62 - by; // direction from center
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const lx = (62 + dx / dist * 68).toFixed(2);
+    const ly = (62 - dy / dist * 68).toFixed(2);
+    labSVG += `<text x="${lx}" y="${ly}" fill="${labelCol}" stroke="none" font-family="Arial,sans-serif" font-size="4" text-anchor="middle" dominant-baseline="middle">x=${x}</text>`;
   }
   // b arcs: label at the point where arc meets the outer unit circle (lower half, y>62)
   for (const b of S_B) {
-    // z = -j/b => Gamma = (-jb-1)/(-jb+1), at the unit circle point
+    // y = g - jb => Gamma = (y-1)/(y+1), at the unit circle point (g=0)
     const gr = (b * b - 1) / (b * b + 1);
     const gi = -2 * b / (b * b + 1);
-    const lx = (62 + 58 * gr).toFixed(2);
-    const ly = (62 - 58 * gi + 3).toFixed(2);
-    labSVG += `<text x="${lx}" y="${ly}" fill="${labelCol}" stroke="none" font-family="Arial,sans-serif" font-size="4" text-anchor="middle">b=${b}</text>`;
+    // Position ON the unit circle boundary, then offset outward by 6 units
+    const bx = 62 + 62 * gr;
+    const by = 62 - 62 * gi;
+    const dx = bx - 62, dy = 62 - by; // direction from center
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const lx = (62 + dx / dist * 68).toFixed(2);
+    const ly = (62 - dy / dist * 68).toFixed(2);
+    labSVG += `<text x="${lx}" y="${ly}" fill="${labelCol}" stroke="none" font-family="Arial,sans-serif" font-size="4" text-anchor="middle" dominant-baseline="middle">b=${b}</text>`;
   }
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="-12 -12 148 148" fill="none">
   <defs><clipPath id="smith-clip"><circle cx="62" cy="62" r="62"/></clipPath></defs>
+  <!-- Clipped group: grid, paths, dots -->
   <g clip-path="url(#smith-clip)">
-    <!-- grid: constant-r circles + constant-x/b arcs, built in absolute 0..124 coords -->
     <g stroke="${gridCol}" stroke-width="${grid}" fill="none">${rGrid}${xGrid}${bGrid}</g>
-    <!-- real-axis reference line (local 0-centered coords) -->
     <g transform="translate(62 62)" stroke="${gridCol}" stroke-width="${grid}"><line x1="-62" y1="0" x2="0" y2="0"/></g>
-    <!-- matching paths + load/target dots: built in absolute coords via nz2xy -->
     <g>${pathSVG}${dotSVG}</g>
-    <!-- labels (also clipped to stay within Smith chart boundary) -->
-    <g fill="${labelCol}" stroke="none" font-family="Arial, sans-serif" font-size="4" text-anchor="middle">${labSVG}</g>
   </g>
+  <!-- Labels OUTSIDE the clipped group (not clipped) -->
+  <g fill="${labelCol}" stroke="none" font-family="Arial, sans-serif" font-size="4" text-anchor="middle" dominant-baseline="middle">${labSVG}</g>
 </svg>`;
 }
 
