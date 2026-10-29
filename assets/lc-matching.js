@@ -411,7 +411,7 @@ function nz2xy(z) {
   const d2 = dr * dr + di * di;
   const gRe = (nr * dr + ni * di) / (d2 || 1e-18);  // Re(Γ)
   const gIm = (ni * dr - nr * di) / (d2 || 1e-18);  // Im(Γ)
-  return { sx: 62 + 62 * gRe, sy: 62 - 62 * gIm };
+  return { sx: 300 + 255 * gRe, sy: 300 - 255 * gIm };
 }
 // normalized admittance y = Y/Y0 -> reflection coefficient Γ = (y-1)/(y+1) -> svg xy.
 // Admittance-form Smith chart: maps y directly without converting to z = 1/y.
@@ -422,7 +422,7 @@ function ny2xy(y) {
   const d2 = dr * dr + di * di;
   const gRe = (nr * dr + ni * di) / (d2 || 1e-18);  // Re(Γ)
   const gIm = (ni * dr - nr * di) / (d2 || 1e-18);  // Im(Γ)
-  return { sx: 62 + 62 * gRe, sy: 62 - 62 * gIm };
+  return { sx: 300 + 255 * gRe, sy: 300 - 255 * gIm };
 }
 // constant-r circle centre/radius. In the unit Î“ plane: centre Î“.re = r/(1+r), R = 1/(1+r).
 function rCircle(r) { return { c: 62 + 62 * r / (r + 1), R: 62 / (r + 1) }; }
@@ -432,15 +432,15 @@ function rCircle(r) { return { c: 62 + 62 * r / (r + 1), R: 62 / (r + 1) }; }
 //   cx = 124,  cy = 62 - 62/x,  R = 62/|x|.
 // (x=1 -> centre (124, 0) R=62 ; x=2 -> centre (124, 31) R=31 ; x=0.5 -> centre (124, -62) R=124.)
 function bCircle(v) {
-  const R = 62 / Math.abs(v);
-  return { cx: 124, cy: 62 - 62 / v, R };
+  const R = 255 / Math.abs(v);
+  return { cx: 555, cy: 300 - 255 / v, R };
 }
 // constant-g (conductance) circle on the impedance Smith chart. Verified: the g-locus
 // (y = g + jb) maps to a circle centred at Gamma = (-g/(g+1), 0), radius = 1/(g+1).
-// In the 62-scale chart: c = 62 - 62*g/(g+1),  R = 62/(g+1).  (g = 0 -> the real axis.)
+// In the 255-scale chart: c = 300 - 255*g/(g+1),  R = 255/(g+1).  (g = 0 -> the real axis.)
 function gCircle(g) {
-  if (Math.abs(g) < 1e-9) return { c: 62, R: Infinity };
-  return { c: 62 - 62 * g / (g + 1), R: 62 / (g + 1) };
+  if (Math.abs(g) < 1e-9) return { c: 300, R: Infinity };
+  return { c: 300 - 255 * g / (g + 1), R: 255 / (g + 1) };
 }
 
 // ---------------------------------------------------------------------------
@@ -573,12 +573,12 @@ function smithSVG(sols, sel, ZL, Zt, Z0, f0) {
     const gr = (x * x - 1) / (x * x + 1);
     const gi = 2 * x / (x * x + 1);
     // Position ON the unit circle boundary, then offset outward by 6 units
-    const bx = 62 + 62 * gr;
-    const by = 62 - 62 * gi;
-    const dx = bx - 62, dy = 62 - by; // direction from center
+    const bx = 300 + 255 * gr;
+    const by = 300 - 255 * gi;
+    const dx = bx - 300, dy = 300 - by; // direction from center
     const dist = Math.sqrt(dx * dx + dy * dy);
-    const lx = (62 + dx / dist * 68).toFixed(2);
-    const ly = (62 - dy / dist * 68).toFixed(2);
+    const lx = (300 + dx / dist * 320).toFixed(2);
+    const ly = (300 - dy / dist * 320).toFixed(2);
     labSVG += `<text x="${lx}" y="${ly}" fill="${labelCol}" stroke="none" font-family="Arial,sans-serif" font-size="4" text-anchor="middle" dominant-baseline="middle">x=${x}</text>`;
   }
   // b arcs: label at the point where arc meets the outer unit circle (lower half, y>62)
@@ -587,25 +587,42 @@ function smithSVG(sols, sel, ZL, Zt, Z0, f0) {
     const gr = (b * b - 1) / (b * b + 1);
     const gi = -2 * b / (b * b + 1);
     // Position ON the unit circle boundary, then offset outward by 6 units
-    const bx = 62 + 62 * gr;
-    const by = 62 - 62 * gi;
-    const dx = bx - 62, dy = 62 - by; // direction from center
+    const bx = 300 + 255 * gr;
+    const by = 300 - 255 * gi;
+    const dx = bx - 300, dy = 300 - by; // direction from center
     const dist = Math.sqrt(dx * dx + dy * dy);
-    const lx = (62 + dx / dist * 68).toFixed(2);
-    const ly = (62 - dy / dist * 68).toFixed(2);
+    const lx = (300 + dx / dist * 320).toFixed(2);
+    const ly = (300 - dy / dist * 320).toFixed(2);
     labSVG += `<text x="${lx}" y="${ly}" fill="${labelCol}" stroke="none" font-family="Arial,sans-serif" font-size="4" text-anchor="middle" dominant-baseline="middle">b=${b}</text>`;
   }
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="-12 -12 148 148" fill="none">
-  <defs><clipPath id="smith-clip"><circle cx="62" cy="62" r="62"/></clipPath></defs>
-  <!-- Clipped group: grid, paths, dots -->
-  <g clip-path="url(#smith-clip)">
-    <g stroke="${gridCol}" stroke-width="${grid}" fill="none">${rGrid}${xGrid}${bGrid}</g>
-    <g transform="translate(62 62)" stroke="${gridCol}" stroke-width="${grid}"><line x1="-62" y1="0" x2="0" y2="0"/></g>
-    <g>${pathSVG}${dotSVG}</g>
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <defs>
+    <clipPath id="chart">
+      <circle cx="300" cy="300" r="255"/>
+    </clipPath>
+  </defs>
+  <g fill="none" stroke="#888" stroke-width="1.5" opacity="1">
+    <g clip-path="url(#chart)">
+      <circle cx="342.5" cy="300" r="212.5"/>
+      <circle cx="385" cy="300" r="170"/>
+      <circle cx="427.5" cy="300" r="127.5"/>
+      <circle cx="470" cy="300" r="85"/>
+      <circle cx="512.5" cy="300" r="42.5"/>
+      <circle cx="555" cy="-975" r="1275"/>
+      <circle cx="555" cy="-210" r="510"/>
+      <circle cx="555" cy="45" r="255"/>
+      <circle cx="555" cy="172.5" r="127.5"/>
+      <circle cx="555" cy="249" r="51"/>
+      <circle cx="555" cy="555" r="255"/>
+      <circle cx="555" cy="427.5" r="127.5"/>
+      <circle cx="555" cy="351" r="51"/>
+      <circle cx="555" cy="810" r="510"/>
+      <circle cx="555" cy="1575" r="1275"/>
+      <path d="M45 300H555" stroke-width="1.5"/>
+    </g>
+    <circle cx="300" cy="300" r="255" stroke-width="2"/>
   </g>
-  <!-- Labels OUTSIDE the clipped group (not clipped) -->
-  <g fill="${labelCol}" stroke="none" font-family="Arial, sans-serif" font-size="4" text-anchor="middle" dominant-baseline="middle">${labSVG}</g>
 </svg>`;
 }
 

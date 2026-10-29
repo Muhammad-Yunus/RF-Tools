@@ -7,10 +7,11 @@
   var page = (document.body && document.body.dataset.page) || "home";
 
   var links = [
-    { id: "home",       href: base + "index.html",                icon: "home",   label: "Home" },
-    { id: "attenuator", href: base + "app/rf-attenuator.html",    icon: "gauge",  label: "RF Attenuator" },
-    { id: "lc-filter",  href: base + "app/lc-filter.html",        icon: "filter", label: "RF LC Filter" },
-    { id: "inductor",   href: base + "app/toroid-inductor.html",  icon: "magnet", label: "Inductor Calc" }
+    { id: "home",       href: base + "index.html",                icon: "home",     label: "Home" },
+    { id: "attenuator", href: base + "app/rf-attenuator.html",    icon: "gauge",    label: "RF Attenuator" },
+    { id: "lc-filter",  href: base + "app/lc-filter.html",        icon: "filter",   label: "RF LC Filter" },
+    { id: "matching",   href: base + "app/lc-matching.html",      icon: "git-merge",label: "Matching Network" },
+    { id: "inductor",   href: base + "app/toroid-inductor.html",  icon: "magnet",   label: "Inductor Calc" }
   ];
 
   var menuHtml = links.map(function (l) {
