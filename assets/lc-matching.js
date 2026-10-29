@@ -556,17 +556,17 @@ function smithSVG(sols, sel, ZL, Zt, Z0, f0) {
       const gMid = zMid.re / (zMid.re * zMid.re + zMid.im * zMid.im); // Re(Y_mid), constant through shunt leg
       d = rArc(pL, zMid, rL) + " " + gArc(zMid, pT, gMid);
     }
-    pathSVG += `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+    pathSVG += `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w * 3}" stroke-linecap="round" stroke-linejoin="round"/>`;
     if (isSel) {
       const zm = norm(zInAtF({ form: s.form, shunt: s.shunt, series: s.series }, f0, ZL));
-      pathSVG += `<circle cx="${nz2xy(zm).sx.toFixed(2)}" cy="${nz2xy(zm).sy.toFixed(2)}" r="1.6" fill="var(--accent)"/>`;
+      pathSVG += `<circle cx="${nz2xy(zm).sx.toFixed(2)}" cy="${nz2xy(zm).sy.toFixed(2)}" r="${1.6 * 3}" fill="var(--accent)"/>`;
     }
   }
 
   // --- load / target dots ---
   const dotSVG =
-    `<circle cx="${nz2xy(pL).sx.toFixed(2)}" cy="${nz2xy(pL).sy.toFixed(2)}" r="2.4" fill="#f59e0b"/>` +
-    `<circle cx="${nz2xy(pT).sx.toFixed(2)}" cy="${nz2xy(pT).sy.toFixed(2)}" r="2.4" fill="#22c55e"/>`;
+    `<circle cx="${nz2xy(pL).sx.toFixed(2)}" cy="${nz2xy(pL).sy.toFixed(2)}" r="${2.4 * 3}" fill="#f59e0b"/>` +
+    `<circle cx="${nz2xy(pT).sx.toFixed(2)}" cy="${nz2xy(pT).sy.toFixed(2)}" r="${2.4 * 3}" fill="#22c55e"/>`;
 
   // --- labels (OUTSIDE the clipped group) ---
   let labSVG = "";
