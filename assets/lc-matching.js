@@ -510,7 +510,7 @@ function smithSVG(sols, sel, ZL, Zt, Z0, f0) {
 
   // --- resistance circles ---
   let rGrid = "";
-  for (const r of S_R) { const o = rCircle(r); rGrid += `<circle cx="${o.c.toFixed(3)}" cy="62" r="${o.R.toFixed(3)}"/>`; }
+  for (const r of S_R) { const o = rCircle(r); rGrid += `<circle cx="${o.c.toFixed(3)}" cy="300" r="${o.R.toFixed(3)}"/>`; }
   // --- reactance arcs (upper half) + susceptance arcs (lower half) ---
   let xGrid = "", bGrid = "";
   for (const x of S_X) xGrid += `<path d="${xArc(x)}"/>`;
