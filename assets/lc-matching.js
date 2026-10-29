@@ -508,13 +508,25 @@ function smithSVG(sols, sel, ZL, Zt, Z0, f0) {
   const grid = "0.18";
   const gridCol = "rgba(120,130,140,0.45)";
 
-  // --- resistance circles ---
-  let rGrid = "";
-  for (const r of S_R) { const o = rCircle(r); rGrid += `<circle cx="${o.c.toFixed(3)}" cy="300" r="${o.R.toFixed(3)}"/>`; }
-  // --- reactance arcs (upper half) + susceptance arcs (lower half) ---
-  let xGrid = "", bGrid = "";
-  for (const x of S_X) xGrid += `<path d="${xArc(x)}"/>`;
-  for (const b of S_B) bGrid += `<path d="${bArc(b)}"/>`;
+  // Hardcoded grid from the reference SVG (exact same structure)
+  const gridSVG = `
+    <circle cx="342.5" cy="300" r="212.5"/>
+    <circle cx="385" cy="300" r="170"/>
+    <circle cx="427.5" cy="300" r="127.5"/>
+    <circle cx="470" cy="300" r="85"/>
+    <circle cx="512.5" cy="300" r="42.5"/>
+    <circle cx="555" cy="-975" r="1275"/>
+    <circle cx="555" cy="-210" r="510"/>
+    <circle cx="555" cy="45" r="255"/>
+    <circle cx="555" cy="172.5" r="127.5"/>
+    <circle cx="555" cy="249" r="51"/>
+    <circle cx="555" cy="555" r="255"/>
+    <circle cx="555" cy="427.5" r="127.5"/>
+    <circle cx="555" cy="351" r="51"/>
+    <circle cx="555" cy="810" r="510"/>
+    <circle cx="555" cy="1575" r="1275"/>
+    <path d="M45 300H555" stroke-width="1.5"/>
+  `;
 
   // --- L-network matching paths: ZL -> intermediate -> Zt ---
   const pL = norm(ZL), pT = norm(Zt);
@@ -596,16 +608,19 @@ function smithSVG(sols, sel, ZL, Zt, Z0, f0) {
     labSVG += `<text x="${lx}" y="${ly}" fill="${labelCol}" stroke="none" font-family="Arial,sans-serif" font-size="4" text-anchor="middle" dominant-baseline="middle">b=${b}</text>`;
   }
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" fill="none">
-  <defs><clipPath id="smith-clip"><circle cx="300" cy="300" r="255"/></clipPath></defs>
-  <!-- Clipped group: grid, paths, dots -->
-  <g clip-path="url(#smith-clip)">
-    <g stroke="${gridCol}" stroke-width="${grid}" fill="none">${rGrid}${xGrid}${bGrid}</g>
-    <g transform="translate(300 300)" stroke="${gridCol}" stroke-width="${grid}"><line x1="-255" y1="0" x2="255" y2="0"/></g>
-    <g>${pathSVG}${dotSVG}</g>
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <defs>
+    <clipPath id="chart">
+      <circle cx="300" cy="300" r="255"/>
+    </clipPath>
+  </defs>
+  <g fill="none" stroke="#888" stroke-width="1.5" opacity="1">
+    <g clip-path="url(#chart)">
+      ${gridSVG}
+    </g>
+    <circle cx="300" cy="300" r="255" stroke-width="2"/>
   </g>
-  <!-- Labels OUTSIDE the clipped group (not clipped) -->
-  <g fill="${labelCol}" stroke="none" font-family="Arial, sans-serif" font-size="4" text-anchor="middle" dominant-baseline="middle">${labSVG}</g>
+  ${pathSVG}${dotSVG}
 </svg>`;
 }
 
