@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LC Matching Network &mdash; RF Tools</title>
+<script>try{var t=localStorage.getItem("rf-theme");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+<script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="matching">
+<script src="../assets/nav.js"></script>
+<main>
+  <header class="page-head">
+    <h1><span class="ico"><i data-lucide="git-merge"></i></span> LC Matching Network</h1>
+    <p>Design L-networks for conjugate matching. All solutions computed for Z<sub>in</sub> = Z<sub>s</sub>* to the selected load.</p>
+  </header>
+  <section class="grid">
+    <div class="card">
+      <h2><span class="ico"><i data-lucide="sliders-horizontal"></i></span> Inputs</h2>
+      <div class="field">
+        <div><span class="ico"><i data-lucide="activity"></i></span> Frequency f<sub>0</sub></div>
+        <div class="row">
+          <input id="f0" type="number" step="any" value="100">
+          <select id="fUnit">
+            <option value="1e3">kHz</option>
+            <option value="1e6" selected>MHz</option>
+            <option value="1e9">GHz</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><div><span class="ico"><i data-lucide="blocks"></i></span> Source Z<sub>s</sub></div>
+        <div class="row">
+          <div class="field"><div>R<sub>s</sub> (&Omega;)</div><input id="rs" type="number" step="any" value="50"></div>
+          <div class="field"><div>X<sub>s</sub> (&Omega;)</div><input id="xs" type="number" step="any" value="0"></div>
+        </div>
+      </div>
+      <div class="field"><div><span class="ico"><i data-lucide="blocks"></i></span> Load Z<sub>L</sub></div>
+        <div class="row">
+          <div class="field"><div>R<sub>L</sub> (&Omega;)</div><input id="rl" type="number" step="any" value="25"></div>
+          <div class="field"><div>X<sub>L</sub> (&Omega;)</div><input id="xl" type="number" step="any" value="0"></div>
+        </div>
+      </div>
+      <div class="field">
+        <div><span class="ico"><i data-lucide="cable"></i></span> Z<sub>0</sub> (&Omega;) <span class="muted">(Smith chart reference)</span></div>
+        <input id="z0" type="number" step="any" value="50">
+      </div>
+      <div class="action">
+        <div class="row">
+          <button class="btn" id="swap"><i data-lucide="arrow-left-right"></i> Swap source &amp; load</button>
+          <button class="btn" id="reset"><i data-lucide="rotate-ccw"></i> Reset</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2><span class="ico"><i data-lucide="list"></i></span> Solutions</h2>
+      <div id="solCards" class="sol-cards"></div>
+      <p class="note" id="solNote"></p>
+    </div>
+  </section>
+  <section class="charts-row">
+    <div class="card" style="margin-bottom:0">
+      <h2><span class="ico"><i data-lucide="activity"></i></span> Smith Chart (Impedance Trajectory)</h2>
+      <div class="chart-wrap"><div id="smith" class="smith-wrap"></div></div>
+    </div>
+    <div class="card" style="margin-bottom:0"><h2><span class="ico"><i data-lucide="line-chart"></i></span> VSWR vs Frequency</h2><div class="chart-wrap"><canvas id="vswr" height="260"></canvas></div></div>
+    <div class="card" style="margin-bottom:0"><h2><span class="ico"><i data-lucide="trending-down"></i></span> Return Loss vs Frequency</h2><div class="chart-wrap"><canvas id="rlChart" height="260"></canvas></div></div>
+  </section>
+</main>
+<footer class="site"><span>RF Tools &mdash; frontend-only, runs entirely in the browser.</span><a href="https://github.com/Muhammad-Yunus/RF-Tools" target="_blank" rel="noopener">GitHub</a></footer>
+<script type="module" src="../assets/lc-matching.js"></script>
+<script>if(window.lucide) lucide.createIcons();</script>
+</body>
+</html>
