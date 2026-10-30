@@ -469,7 +469,7 @@ function gArc(A, B, g) {
   }
   return polyLine(pts);
 }
-// --- constant-x (positive reactance) grid arc: z = r + jx, x fixed, r: 0 â†’ +∞ ---
+// --- constant-x (positive reactance) grid arc: z = r + jx, x fixed, r: 0 →’ +∞ ---
 function xArc(x) {
   const n = 64, pts = [];
   for (let i = 0; i <= n; i++) {
