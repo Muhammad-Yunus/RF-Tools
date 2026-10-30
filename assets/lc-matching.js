@@ -393,7 +393,7 @@ function canvas2d(id, pad, fixedW, fixedH) {
 
 // ---------- Smith chart (unit-impedance, normalized to Z0) ----------
 // Grid scale as the reference SVG: sx=62+62·Re, sy=62-62·Im for normalized z.
-// Resistance circles r: cx=62+62·r/(r+1), R=62/âˆš((r+1)²+r²)
+// Resistance circles r: cx=62+62·r/(r+1), R=62/√((r+1)²+r²)
 // Reactance/susceptance arcs v: cx=62+62·(v-1/v)/2, R=31/|v|  (x arcs up, b arcs down)
 const S_R = [0.2, 0.5, 1, 2, 5];   // resistance circles
 const S_X = [0.2, 0.5, 1, 2, 5];   // reactance arcs (upper half, +x)
@@ -671,7 +671,7 @@ function drawVSWR(sols, sel, ZL, Zt, f0, hf = null) {
   ctx.beginPath(); ctx.moveTo(xf(f0), y0); ctx.lineTo(xf(f0), y1); ctx.stroke();
   ctx.setLineDash([]);
   ctx.fillStyle = muted;
-  ctx.fillText(fmtFreq(f0) + " (fâ‚€)", Math.min(xf(f0) + 4, x1 - 60), y1 + 14);
+  ctx.fillText(fmtFreq(f0) + " (f₀€)", Math.min(xf(f0) + 4, x1 - 60), y1 + 14);
 
   all.forEach((sw, i) => {
     const isSel = sols[i] === sel;
@@ -756,7 +756,7 @@ function drawRL(sols, sel, ZL, Zt, f0, hf = null) {
   ctx.beginPath(); ctx.moveTo(xf(f0), y0); ctx.lineTo(xf(f0), y1); ctx.stroke();
   ctx.setLineDash([]);
   ctx.fillStyle = muted;
-  ctx.fillText(fmtFreq(f0) + " (fâ‚€)", Math.min(xf(f0) + 4, x1 - 60), y1 + 14);
+  ctx.fillText(fmtFreq(f0) + " (f₀€)", Math.min(xf(f0) + 4, x1 - 60), y1 + 14);
 
   all.forEach((sw, i) => {
     const isSel = sols[i] === sel;
