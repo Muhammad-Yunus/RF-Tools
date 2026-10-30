@@ -344,7 +344,7 @@ function render() {
         const isLowPass = s.rec && (s.shunt.t === 'L' && s.series.t === 'C');
         card.innerHTML =
           `<div class="sol-card-head">
-            ${isLowPass ? '' : `<span class="sol-card-index">${i + 1}</span>`}
+            ${isLowPass || isHighPass ? '' : `<span class="sol-card-index">${i + 1}</span>`}
             ${isLowPass ? '<span class="sol-card-type sol-tag lp">Low pass</span>' : (isHighPass ? '<span class="sol-card-type sol-tag hp">High pass</span>' : `<span class="sol-card-type">${s.form}</span>`)}
             <span class="${tagCls}">${tag}</span>
           </div>
