@@ -133,6 +133,7 @@ function solveLMatching(Zs, ZL, f0) {
   let best = null;
   for (const s of sols) if (s.q != null && (best == null || s.q < best.q)) best = s;
   sols.forEach((s) => (s.rec = s === best));
+  sols.sort((a, b) => (a.rec === b.rec ? 0 : a.rec ? -1 : 1));
   return sols;
 }
 // Bandwidth where VSWR <= 2 (|Gamma| <= 1/3), scanning outward from f0
