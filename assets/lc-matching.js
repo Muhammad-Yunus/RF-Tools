@@ -671,7 +671,7 @@ function drawVSWR(sols, sel, ZL, Zt, f0, hf = null) {
   ctx.beginPath(); ctx.moveTo(xf(f0), y0); ctx.lineTo(xf(f0), y1); ctx.stroke();
   ctx.setLineDash([]);
   ctx.fillStyle = muted;
-  ctx.fillText(fmtFreq(f0) + " (f₀€)", Math.min(xf(f0) + 4, x1 - 60), y1 + 14);
+  ctx.fillText(fmtFreq(f0) + " (f₀)", Math.min(xf(f0) + 4, x1 - 60), y1 + 14);
 
   all.forEach((sw, i) => {
     const isSel = sols[i] === sel;
@@ -756,7 +756,7 @@ function drawRL(sols, sel, ZL, Zt, f0, hf = null) {
   ctx.beginPath(); ctx.moveTo(xf(f0), y0); ctx.lineTo(xf(f0), y1); ctx.stroke();
   ctx.setLineDash([]);
   ctx.fillStyle = muted;
-  ctx.fillText(fmtFreq(f0) + " (f₀€)", Math.min(xf(f0) + 4, x1 - 60), y1 + 14);
+  ctx.fillText(fmtFreq(f0) + " (f₀)", Math.min(xf(f0) + 4, x1 - 60), y1 + 14);
 
   all.forEach((sw, i) => {
     const isSel = sols[i] === sel;
