@@ -300,7 +300,7 @@ footer.site a:hover { text-decoration: underline; }
 .sch-card .diagram-wrap svg { display: block; height: 100%; width: auto; margin: 0 auto; }
 
 /* ---------- LC Matching: Solution Cards ---------- */
-.sol-cards { display: flex; flex-direction: column; gap: 14px; }
+.sol-cards { display: flex; flex-direction: column; gap: 14px; overflow-y: scroll; height: 480px; padding-right: 8px; }
 .sol-card {
   position: relative;
   background: var(--panel-2);
