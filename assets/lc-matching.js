@@ -22,21 +22,21 @@ const ONE = { re: 1, im: 0 };
 
 // ---- Formatting ----
 function fmtFreq(f) {
-  if (!isFinite(f)) return "â€”";
+  if (!isFinite(f)) return "—";
   if (f >= 1e9) return (f / 1e9).toPrecision(4).replace(/\.?0+$/, "") + " GHz";
   if (f >= 1e6) return (f / 1e6).toPrecision(4).replace(/\.?0+$/, "") + " MHz";
   if (f >= 1e3) return (f / 1e3).toPrecision(4).replace(/\.?0+$/, "") + " kHz";
   return f.toFixed(2) + " Hz";
 }
 function fmtL(v) {
-  if (!isFinite(v) || v <= 0) return "â€”";
+  if (!isFinite(v) || v <= 0) return "—";
   if (v >= 1e-3) return (v * 1e3).toPrecision(4).replace(/\.?0+$/, "") + " mH";
   if (v >= 1e-6) return (v * 1e6).toPrecision(4).replace(/\.?0+$/, "") + " ÂµH";
   if (v >= 1e-9) return (v * 1e9).toPrecision(4).replace(/\.?0+$/, "") + " nH";
   return (v * 1e12).toPrecision(4).replace(/\.?0+$/, "") + " pH";
 }
 function fmtC(v) {
-  if (!isFinite(v) || v <= 0) return "â€”";
+  if (!isFinite(v) || v <= 0) return "—";
   if (v >= 1e-6) return (v * 1e6).toPrecision(4).replace(/\.?0+$/, "") + " ÂµF";
   if (v >= 1e-9) return (v * 1e-9).toPrecision(4).replace(/\.?0+$/, "") + " nF";
   return (v * 1e12).toPrecision(4).replace(/\.?0+$/, "") + " pF";
@@ -58,12 +58,12 @@ function zElem(e, f) {
 function zInAtF(s, f, ZL) {
   const zsh = zElem(s.shunt, f);
   const zsr = zElem(s.series, f);
-  if (s.form === "Shuntâ€“Series") {
+  if (s.form === "Shunt–Series") {
     // ZL in parallel with shunt, then series
     const zpar = cx.div(cx.mul(ZL, zsh), cx.add(ZL, zsh));
     return cx.add(zpar, zsr);
   }
-  // Seriesâ€“Shunt: ZL in series with series element, then shunt to source
+  // Series–Shunt: ZL in series with series element, then shunt to source
   const z1 = cx.add(ZL, zsr);
   const yTot = cx.add(cx.div(ONE, z1), cx.div(ONE, zsh));
   return cx.div(ONE, yTot);
@@ -95,7 +95,7 @@ function solveLMatching(Zs, ZL, f0) {
         if (Math.abs(Xs) < 1e-9) continue;
         const shunt = B > 0 ? { t: "C", v: B / w } : { t: "L", v: -1 / (w * B) };
         const ser = Xs > 0 ? { t: "L", v: Xs / w } : { t: "C", v: -1 / (w * Xs) };
-        sols.push({ form: "Shuntâ€“Series", shunt, series: ser });
+        sols.push({ form: "Shunt–Series", shunt, series: ser });
       }
     }
   }
@@ -120,7 +120,7 @@ function solveLMatching(Zs, ZL, f0) {
         if (Math.abs(B) < 1e-9) continue;
         const ser = Xs > 0 ? { t: "L", v: Xs / w } : { t: "C", v: -1 / (w * Xs) };
         const shunt = B > 0 ? { t: "C", v: B / w } : { t: "L", v: -1 / (w * B) };
-        sols.push({ form: "Seriesâ€“Shunt", shunt, series: ser });
+        sols.push({ form: "Series–Shunt", shunt, series: ser });
       }
     }
   }
@@ -332,7 +332,7 @@ function render() {
   if (container) {
     container.innerHTML = "";
     if (!sols.length) {
-      container.innerHTML = '<div class="alert">No valid solution â€” check that Re(Z<sub>s</sub>*) &gt; 0 and the load is reachable.</div>';
+      container.innerHTML = '<div class="alert">No valid solution — check that Re(Z<sub>s</sub>*) &gt; 0 and the load is reachable.</div>';
     } else {
       sols.forEach((s, i) => {
         const card = document.createElement("div");
@@ -348,8 +348,8 @@ function render() {
           <div class="sol-tiles">
             <div class="sol-tile"><span class="k">${s.shunt.t} (shunt)</span><span class="v">${fmtZc(s.shunt.v, s.shunt.t)}</span></div>
             <div class="sol-tile"><span class="k">${s.series.t} (series)</span><span class="v">${fmtZc(s.series.v, s.series.t)}</span></div>
-            <div class="sol-tile"><span class="k">Q<sub>L</sub></span><span class="v">${s.q != null ? s.q.toFixed(2) : "â€”"}</span></div>
-            <div class="sol-tile"><span class="k">BW (VSWR&lt;2)</span><span class="v">${s.bw > 0 ? fmtFreq(s.bw) : "â€”"}</span></div>
+            <div class="sol-tile"><span class="k">Q<sub>L</sub></span><span class="v">${s.q != null ? s.q.toFixed(2) : "—"}</span></div>
+            <div class="sol-tile"><span class="k">BW (VSWR&lt;2)</span><span class="v">${s.bw > 0 ? fmtFreq(s.bw) : "—"}</span></div>
           </div>
           <div class="sol-schematic">${schematicSVG(s)}</div>
           <button class="sol-select" data-i="${i}">${i === selected ? "Selected" : "Select"}</button>`;
@@ -534,7 +534,7 @@ function smithSVG(sols, sel, ZL, Zt, Z0, f0) {
     const col = isSel ? "var(--accent)" : "rgba(150,160,170,0.5)";
     const w = isSel ? 1.6 : 0.5;
     let d;
-    if (s.form === "Shuntâ€“Series") {
+    if (s.form === "Shunt–Series") {
       // Shunt element first: Y -> Y + jB keeps conductance g = Re(Y) constant,
       // so travel along a constant-g circle from ZL to the intermediate point zMid.
       // Then series element: Z -> Z + jX keeps r = Re(Z) constant, travel along a
