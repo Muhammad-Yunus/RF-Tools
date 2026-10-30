@@ -348,8 +348,8 @@ function render() {
             ${isLowPass ? '<span class="sol-card-type sol-tag lp">Low pass</span>' : (isHighPass ? '<span class="sol-card-type sol-tag hp">High pass</span>' : `<span class="sol-card-type">${s.form}</span>`)}
             <span class="${tagCls}">${tag}</span>
           </div>
-          ${isLowPass ? `<div class="sol-desc">loaded Q is tied at ${s.q.toFixed(2)}, so it comes down to filter shape: low pass, which attenuates harmonics, Attenuates harmonics · passes DC · no DC path to ground</div>` : ''}
-          ${isHighPass ? '<div class="sol-desc">choose this if you need DC blocking through the network, Attenuates below the band · blocks DC · DC path to ground</div>' : ''}
+          ${isLowPass ? `<div class="sol-desc-inline">loaded Q is tied at ${s.q.toFixed(2)}, so it comes down to filter shape: low pass, which attenuates harmonics, Attenuates harmonics · passes DC · no DC path to ground</div>` : ''}
+          ${isHighPass ? '<div class="sol-desc-inline">choose this if you need DC blocking through the network, Attenuates below the band · blocks DC · DC path to ground</div>' : ''}
           <div class="sol-tiles">
             <div class="sol-tile"><span class="k">${s.shunt.t} (shunt)</span><span class="v">${fmtZc(s.shunt.v, s.shunt.t)}</span></div>
             <div class="sol-tile"><span class="k">${s.series.t} (series)</span><span class="v">${fmtZc(s.series.v, s.series.t)}</span></div>
