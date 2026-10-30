@@ -1,4 +1,4 @@
-"use strict";
+﻿"use strict";
 
 const $ = (id) => document.getElementById(id);
 const TAU = Math.PI * 2;
