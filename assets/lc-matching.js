@@ -469,7 +469,7 @@ function gArc(A, B, g) {
   }
   return polyLine(pts);
 }
-// --- constant-x (positive reactance) grid arc: z = r + jx, x fixed, r: 0 â†’ +âˆž ---
+// --- constant-x (positive reactance) grid arc: z = r + jx, x fixed, r: 0 â†’ +∞ ---
 function xArc(x) {
   const n = 64, pts = [];
   for (let i = 0; i <= n; i++) {
@@ -713,7 +713,7 @@ function drawVSWR(sols, sel, ZL, Zt, f0, hf = null) {
       const rows = sols.map((s, i) => {
         const hv = interpAt(all[i], h);
         const col = (s === sel) ? accent : "rgba(150,160,170,0.9)";
-        return `<div class="tt-row"><span class="tt-dot" style="background:${col}"></span>Sol ${i + 1}${s === sel ? " · sel" : ""}<b>VSWR ${isFinite(hv.vswr) && hv.vswr < 999 ? hv.vswr.toFixed(3) : "â‰¥100"}</b></div>`;
+        return `<div class="tt-row"><span class="tt-dot" style="background:${col}"></span>Sol ${i + 1}${s === sel ? " · sel" : ""}<b>VSWR ${isFinite(hv.vswr) && hv.vswr < 999 ? hv.vswr.toFixed(3) : "≥100"}</b></div>`;
       }).join("");
       return `<div class="tt-freq">${fmtFreq(h)}</div>${rows}`;
     },
