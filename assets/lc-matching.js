@@ -359,9 +359,7 @@ function render() {
     }
   }
   const note = $("solNote");
-  if (note) note.innerHTML = sols.length
-    ? `${sols.length} valid L-network solution(s). Target: Z<sub>in</sub> = Z<sub>s</sub>* = ${Zt.re.toFixed(2)} ${Zt.im >= 0 ? "+" : "âˆ’"} j${Math.abs(Zt.im).toFixed(2)} Î©.`
-    : "No realizable L-network solution for this combination (check that Re(Z<sub>s</sub>*) > 0 and the load is reachable).";
+  if (note) note.innerHTML = "";
 
   const sel = sols[selected] || null;
   drawSmith(sols, sel, ZL, Zt, Z0, f0);
