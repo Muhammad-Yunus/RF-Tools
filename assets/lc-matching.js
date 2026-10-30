@@ -341,12 +341,14 @@ function render() {
         const tag = s.rec ? 'Recommended · best Q' : 'Alternative';
         const tagCls = s.rec ? "sol-tag rec" : "sol-tag";
         const isHighPass = !s.rec && (s.shunt.t === 'C' && s.series.t === 'L');
+        const isLowPass = s.rec && (s.shunt.t === 'L' && s.series.t === 'C');
         card.innerHTML =
           `<div class="sol-card-head">
-            <span class="sol-card-index">${i + 1}</span>
-            ${isHighPass ? '<span class="sol-card-type sol-tag hp">High pass</span>' : `<span class="sol-card-type">${s.form}</span>`}
+            ${isLowPass ? '' : `<span class="sol-card-index">${i + 1}</span>`}
+            ${isLowPass ? '<span class="sol-card-type sol-tag lp">Low pass</span>' : (isHighPass ? '<span class="sol-card-type sol-tag hp">High pass</span>' : `<span class="sol-card-type">${s.form}</span>`)}
             <span class="${tagCls}">${tag}</span>
           </div>
+          ${isLowPass ? `<div class="sol-desc">loaded Q is tied at ${s.q.toFixed(2)}, so it comes down to filter shape: low pass, which attenuates harmonics, Attenuates harmonics · passes DC · no DC path to ground</div>` : ''}
           ${isHighPass ? '<div class="sol-desc">choose this if you need DC blocking through the network, Attenuates below the band · blocks DC · DC path to ground</div>' : ''}
           <div class="sol-tiles">
             <div class="sol-tile"><span class="k">${s.shunt.t} (shunt)</span><span class="v">${fmtZc(s.shunt.v, s.shunt.t)}</span></div>
