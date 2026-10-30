@@ -301,6 +301,10 @@ footer.site a:hover { text-decoration: underline; }
 
 /* ---------- LC Matching: Solution Cards ---------- */
 .sol-cards { display: flex; flex-direction: column; gap: 14px; overflow-y: scroll; height: 480px; padding-right: 8px; }
+.sol-cards::-webkit-scrollbar { width: 8px; }
+.sol-cards::-webkit-scrollbar-track { background: var(--border); border-radius: 4px; }
+.sol-cards::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+.sol-cards::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 .sol-card {
   position: relative;
   background: var(--panel-2);
