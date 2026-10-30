@@ -399,8 +399,8 @@ const S_R = [0.2, 0.5, 1, 2, 5];   // resistance circles
 const S_X = [0.2, 0.5, 1, 2, 5];   // reactance arcs (upper half, +x)
 const S_B = [0.2, 0.5, 1, 2, 5];   // susceptance arcs (lower half, -b)
 
-// normalized impedance z = Z/Z0 -> reflection coefficient Î“ = (z-1)/(z+1) -> svg xy.
-// Î“.real/imag are in [-1,1]; map to a 62-radius circle centred at (62,62).
+// normalized impedance z = Z/Z0 -> reflection coefficient Γ = (z-1)/(z+1) -> svg xy.
+// Γ.real/imag are in [-1,1]; map to a 62-radius circle centred at (62,62).
 function nz2xy(z) {
   // Γ = (z - 1) / (z + 1),  z = re + j·im
   const zr = z.re, zi = z.im;
@@ -422,9 +422,9 @@ function ny2xy(y) {
   const gIm = (ni * dr - nr * di) / (d2 || 1e-18);  // Im(Γ)
   return { sx: 300 + 255 * gRe, sy: 300 - 255 * gIm };
 }
-// constant-r circle centre/radius. In the unit Î“ plane: centre Î“.re = r/(1+r), R = 1/(1+r).
+// constant-r circle centre/radius. In the unit Γ plane: centre Γ.re = r/(1+r), R = 1/(1+r).
 function rCircle(r) { return { c: 300 + 255 * r / (r + 1), R: 255 / (r + 1) }; }
-// constant-x (reactance/susceptance) circle centre/radius. Verified against the Î“-mapping:
+// constant-x (reactance/susceptance) circle centre/radius. Verified against the Γ-mapping:
 // the x-locus (z = r + jx, r -> 0..inf) is an arc of a circle centred at Gamma = (1, 1/x),
 // i.e. always tangent to the right edge of the chart (Gamma=+1). In chart coords:
 //   cx = 124,  cy = 62 - 62/x,  R = 62/|x|.
@@ -798,7 +798,7 @@ function drawRL(sols, sel, ZL, Zt, f0, hf = null) {
       const rows = sols.map((s, i) => {
         const hv = interpAt(all[i], h);
         const col = (s === sel) ? accent : "rgba(150,160,170,0.9)";
-        return `<div class="tt-row"><span class="tt-dot" style="background:${col}"></span>Sol ${i + 1}${s === sel ? " · sel" : ""}<b>${hv.rl.toFixed(2)} dB (|Î“| ${hv.gm.toExponential(2)})</b></div>`;
+        return `<div class="tt-row"><span class="tt-dot" style="background:${col}"></span>Sol ${i + 1}${s === sel ? " · sel" : ""}<b>${hv.rl.toFixed(2)} dB (|Γ| ${hv.gm.toExponential(2)})</b></div>`;
       }).join("");
       return `<div class="tt-freq">${fmtFreq(h)}</div>${rows}`;
     },
