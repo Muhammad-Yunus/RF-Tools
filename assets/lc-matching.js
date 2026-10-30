@@ -31,13 +31,13 @@ function fmtFreq(f) {
 function fmtL(v) {
   if (!isFinite(v) || v <= 0) return "—";
   if (v >= 1e-3) return (v * 1e3).toPrecision(4).replace(/\.?0+$/, "") + " mH";
-  if (v >= 1e-6) return (v * 1e6).toPrecision(4).replace(/\.?0+$/, "") + " ÂµH";
+  if (v >= 1e-6) return (v * 1e6).toPrecision(4).replace(/\.?0+$/, "") + " µH";
   if (v >= 1e-9) return (v * 1e9).toPrecision(4).replace(/\.?0+$/, "") + " nH";
   return (v * 1e12).toPrecision(4).replace(/\.?0+$/, "") + " pH";
 }
 function fmtC(v) {
   if (!isFinite(v) || v <= 0) return "—";
-  if (v >= 1e-6) return (v * 1e6).toPrecision(4).replace(/\.?0+$/, "") + " ÂµF";
+  if (v >= 1e-6) return (v * 1e6).toPrecision(4).replace(/\.?0+$/, "") + " µF";
   if (v >= 1e-9) return (v * 1e-9).toPrecision(4).replace(/\.?0+$/, "") + " nF";
   return (v * 1e12).toPrecision(4).replace(/\.?0+$/, "") + " pF";
 }
@@ -80,8 +80,8 @@ function solveLMatching(Zs, ZL, f0) {
   if (!(Rt > 0) || !(zl2 > 1e-12) || !(f0 > 0)) return sols;
 
   // FORM 1: shunt susceptance jB across the load, then series jXs to source.
-  // Parallel section: G = Rl/zl2, Bp = B - Xl/zl2.  Re(Zp) = G/(GÂ²+BpÂ²) = Rt
-  //   => Bp = Â± sqrt( Rl*(zl2 - Rt*Rl) / (Rt*zl2Â²) )
+  // Parallel section: G = Rl/zl2, Bp = B - Xl/zl2.  Re(Zp) = G/(G²+Bp²) = Rt
+  //   => Bp = ± sqrt( Rl*(zl2 - Rt*Rl) / (Rt*zl2²) )
   // Series: Xs = Xt - Im(Zp) = Xt + Bp*Rt*zl2/Rl
   {
     const K1 = Rl * (zl2 - Rt * Rl) / (Rt * zl2 * zl2);
@@ -337,7 +337,7 @@ function render() {
       sols.forEach((s, i) => {
         const card = document.createElement("div");
         card.className = "sol-card" + (i === selected ? " sel" : "");
-        const tag = s.rec ? 'Recommended Â· best Q' : 'Alternative';
+        const tag = s.rec ? 'Recommended · best Q' : 'Alternative';
         const tagCls = s.rec ? "sol-tag rec" : "sol-tag";
         card.innerHTML =
           `<div class="sol-card-head">
@@ -392,9 +392,9 @@ function canvas2d(id, pad, fixedW, fixedH) {
 }
 
 // ---------- Smith chart (unit-impedance, normalized to Z0) ----------
-// Grid scale as the reference SVG: sx=62+62Â·Re, sy=62-62Â·Im for normalized z.
-// Resistance circles r: cx=62+62Â·r/(r+1), R=62/âˆš((r+1)Â²+rÂ²)
-// Reactance/susceptance arcs v: cx=62+62Â·(v-1/v)/2, R=31/|v|  (x arcs up, b arcs down)
+// Grid scale as the reference SVG: sx=62+62·Re, sy=62-62·Im for normalized z.
+// Resistance circles r: cx=62+62·r/(r+1), R=62/âˆš((r+1)²+r²)
+// Reactance/susceptance arcs v: cx=62+62·(v-1/v)/2, R=31/|v|  (x arcs up, b arcs down)
 const S_R = [0.2, 0.5, 1, 2, 5];   // resistance circles
 const S_X = [0.2, 0.5, 1, 2, 5];   // reactance arcs (upper half, +x)
 const S_B = [0.2, 0.5, 1, 2, 5];   // susceptance arcs (lower half, -b)
@@ -713,7 +713,7 @@ function drawVSWR(sols, sel, ZL, Zt, f0, hf = null) {
       const rows = sols.map((s, i) => {
         const hv = interpAt(all[i], h);
         const col = (s === sel) ? accent : "rgba(150,160,170,0.9)";
-        return `<div class="tt-row"><span class="tt-dot" style="background:${col}"></span>Sol ${i + 1}${s === sel ? " Â· sel" : ""}<b>VSWR ${isFinite(hv.vswr) && hv.vswr < 999 ? hv.vswr.toFixed(3) : "â‰¥100"}</b></div>`;
+        return `<div class="tt-row"><span class="tt-dot" style="background:${col}"></span>Sol ${i + 1}${s === sel ? " · sel" : ""}<b>VSWR ${isFinite(hv.vswr) && hv.vswr < 999 ? hv.vswr.toFixed(3) : "â‰¥100"}</b></div>`;
       }).join("");
       return `<div class="tt-freq">${fmtFreq(h)}</div>${rows}`;
     },
@@ -798,7 +798,7 @@ function drawRL(sols, sel, ZL, Zt, f0, hf = null) {
       const rows = sols.map((s, i) => {
         const hv = interpAt(all[i], h);
         const col = (s === sel) ? accent : "rgba(150,160,170,0.9)";
-        return `<div class="tt-row"><span class="tt-dot" style="background:${col}"></span>Sol ${i + 1}${s === sel ? " Â· sel" : ""}<b>${hv.rl.toFixed(2)} dB (|Î“| ${hv.gm.toExponential(2)})</b></div>`;
+        return `<div class="tt-row"><span class="tt-dot" style="background:${col}"></span>Sol ${i + 1}${s === sel ? " · sel" : ""}<b>${hv.rl.toFixed(2)} dB (|Î“| ${hv.gm.toExponential(2)})</b></div>`;
       }).join("");
       return `<div class="tt-freq">${fmtFreq(h)}</div>${rows}`;
     },
