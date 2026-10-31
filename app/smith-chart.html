@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smith Chart &mdash; RF Tools</title>
+<script>try{var t=localStorage.getItem("rf-theme");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+<script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/smith-chart.js?v=25"></script>
+<style>
+.circuit-row {
+  display: flex; align-items: center; gap: 6px; padding: 8px 10px;
+  background: var(--panel-2); border: 1px solid var(--border);
+  border-radius: 8px; margin-bottom: 6px; font-size: 13px;
+}
+.circuit-row .row-label {
+  font-weight: 700; color: var(--accent); min-width: 90px; font-size: 12px;
+  text-transform: uppercase; letter-spacing: .4px;
+}
+.circuit-row .row-fields { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex: 1; }
+.circuit-row .mini-field { display: flex; flex-direction: column; gap: 1px; }
+.circuit-row .mini-field label { font-size: 10px; color: var(--muted); text-transform: uppercase; }
+.circuit-row input[type="number"], .circuit-row select {
+  width: 90px; height: 32px; padding: 0 8px; font-size: 13px;
+  border-radius: 6px; border: 1px solid var(--border);
+  background: var(--panel); color: var(--text); outline: none;
+}
+.circuit-row input:focus, .circuit-row select:focus { border-color: var(--accent); }
+.circuit-row button.rm {
+  background: none; border: none; cursor: pointer; color: var(--muted);
+  padding: 4px; border-radius: 4px; flex-shrink: 0;
+}
+.circuit-row button.rm:hover { color: #e74c3c; background: rgba(231,76,60,.1); }
+.add-comps { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.add-comps button { font-size: 11px; padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+.readout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+.readout-grid .rd-key { font-size: 11px; color: var(--muted); text-transform: uppercase; }
+.readout-grid .rd-val { font-size: 15px; font-weight: 700; color: var(--text); font-family: "Consolas", monospace; }
+.smith-wrap { position: relative; }
+.smith-wrap svg { width: 100%; height: auto; display: block; }
+.chart-tip-smith {
+  position: absolute; pointer-events: none; z-index: 10;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+  padding: 7px 10px; font-size: 12px; color: var(--text);
+  box-shadow: 0 6px 18px rgba(0,0,0,.35); white-space: nowrap; display: none;
+  font-family: "Consolas", monospace;
+}
+.presets-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.presets-bar .seg { display: flex; gap: 4px; align-items: center; }
+.presets-bar .seg-label { font-size: 11px; color: var(--muted); margin-right: 4px; text-transform: uppercase; }
+.presets-bar button {
+  padding: 4px 10px; font-size: 11px; border-radius: 12px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--panel-2); color: var(--muted);
+}
+.presets-bar button:hover, .presets-bar button.active {
+  border-color: var(--accent); color: var(--accent);
+}
+.sweep-summary { margin-top: 8px; font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body data-page="smith">
+<script src="../assets/nav.js"></script>
+<main>
+  <header class="page-head">
+    <h1><span class="ico"><i data-lucide="radar"></i></span> Smith Chart</h1>
+    <p>Interactive impedance analysis with multi-component cascade and frequency sweep.</p>
+  </header>
+
+  <section class="grid">
+    <!-- LEFT: Circuit Editor -->
+    <div class="card">
+      <h2><span class="ico"><i data-lucide="layers"></i></span> Circuit</h2>
+      <div class="presets-bar" id="presetsBar">
+        <div class="seg"><span class="seg-label">Z₀</span>
+          <button onclick="setZ0(25)">25Ω</button>
+          <button onclick="setZ0(50)" class="active">50Ω</button>
+          <button onclick="setZ0(75)">75Ω</button>
+          <button onclick="setZ0(300)">300Ω</button>
+        </div>
+        <div class="seg"><span class="seg-label">Z<sub>L</sub></span>
+          <button onclick="setZLoad(50,0)">50+j0</button>
+          <button onclick="setZLoad(75,0)">75+j0</button>
+          <button onclick="setZLoad(25,0)">25+j0</button>
+          <button onclick="setZLoad(0,0)">short</button>
+          <button onclick="setZLoad(Infinity,0)">open</button>
+        </div>
+        <div class="seg"><span class="seg-label">f₀</span>
+          <button onclick="setF0(100)">100M</button>
+          <button onclick="setF0(1e3)">1G</button>
+          <button onclick="setF0(2440)">2.4G</button>
+          <button onclick="setF0(5e3)">5G</button>
+        </div>
+      </div>
+      <div id="circuitRows"></div>
+      <div class="add-comps">
+        <button onclick="addComponent('blackbox')"><i data-lucide="box"></i> Z Load</button>
+        <button onclick="addComponent('seriesL')"><i data-lucide="wave-sine"></i> Series L</button>
+        <button onclick="addComponent('seriesC')"><i data-lucide="battery"></i> Series C</button>
+        <button onclick="addComponent('seriesR')"><i data-lucide="zap"></i> Series R</button>
+        <button onclick="addComponent('shuntL')"><i data-lucide="circle-dot"></i> Shunt L</button>
+        <button onclick="addComponent('shuntC')"><i data-lucide="circle-dot"></i> Shunt C</button>
+        <button onclick="addComponent('tline')"><i data-lucide="arrow-right-left"></i> T-Line</button>
+        <button onclick="addComponent('transformer')"><i data-lucide="git-merge"></i> Transformer</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: Smith Chart -->
+    <div class="card">
+      <h2><span class="ico"><i data-lucide="radar"></i></span> Smith Chart</h2>
+      <div class="smith-wrap">
+        <svg id="smithSvg" viewBox="0 0 650 650" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="chart-tip-smith" id="smithTip"></div>
+      </div>
+      <div class="chart-legend">
+        <span><span class="dot" style="background:#f59e0b"></span> Load</span>
+        <span><span class="dot" style="background:#22c55e"></span> Input</span>
+        <span><span class="dot" style="background:#3b82f6"></span> Locus</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTTOM: Sweep + Readout + Overlays -->
+  <section class="charts-row">
+    <div class="card">
+      <h2><span class="ico"><i data-lucide="sliders-horizontal"></i></span> Frequency Sweep</h2>
+      <div class="field"><div><span class="ico"><i data-lucide="activity"></i></span> f₀ (MHz)</div>
+        <input id="f0Input" type="number" step="any" value="2440"></div>
+      <div class="field"><div>Span (MHz)</div>
+        <input id="fspanInput" type="number" step="any" value="100"></div>
+      <div class="field"><div>Points</div>
+        <input id="fpntsInput" type="number" step="1" value="100" min="2" max="2000"></div>
+      <div class="action"><button class="btn" id="sweepBtn"><i data-lucide="play"></i> Sweep</button>
+        <button class="btn" id="clearSweepBtn" style="display:none"><i data-lucide="eraser"></i> Clear</button></div>
+      <div class="sweep-summary" id="sweepSummary"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="ico"><i data-lucide="circle-dot"></i></span> Readout</h2>
+      <div class="readout-grid" id="readoutGrid">
+        <div class="rd-key">Z<sub>in</sub></div><div class="rd-val" id="rdZin">—</div>
+        <div class="rd-key">Γ (magnitude)</div><div class="rd-val" id="rdGamma">—</div>
+        <div class="rd-key">Γ (angle)</div><div class="rd-val" id="rdGammaAng">—</div>
+        <div class="rd-key">VSWR</div><div class="rd-val" id="rdVswr">—</div>
+        <div class="rd-key">Return Loss</div><div class="rd-val" id="rdRL">—</div>
+        <div class="rd-key">Normalized z</div><div class="rd-val" id="rdNZ">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="ico"><i data-lucide="circle-help"></i></span> Overlays</h2>
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;margin-bottom:8px">
+          <input type="checkbox" id="chkVSWR"> <b>VSWR Circles</b>
+        </label>
+        <div class="field"><div>VSWR contours (comma-sep)</div>
+          <input id="vswrVals" type="text" placeholder="1.5, 2, 3" disabled></div>
+      </div>
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;margin-bottom:8px">
+          <input type="checkbox" id="chkQ"> <b>Q Circles</b>
+        </label>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site"><span>RF Tools &mdash; frontend-only, runs entirely in the browser.</span><a href="https://github.com/Muhammad-Yunus/RF-Tools" target="_blank" rel="noopener">GitHub</a></footer>
+<script>if(window.lucide) lucide.createIcons();</script>
+</body>
+</html>

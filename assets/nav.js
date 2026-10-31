@@ -11,6 +11,7 @@
     { id: "attenuator", href: base + "app/rf-attenuator.html",    icon: "gauge",    label: "RF Attenuator" },
     { id: "lc-filter",  href: base + "app/lc-filter.html",        icon: "filter",   label: "RF LC Filter" },
     { id: "matching",   href: base + "app/lc-matching.html",      icon: "git-merge",label: "Matching Network" },
+    { id: "smith",      href: base + "app/smith-chart.html",      icon: "radar",      label: "Smith Chart" },
     { id: "inductor",   href: base + "app/toroid-inductor.html",  icon: "magnet",   label: "Inductor Calc" }
   ];
 
