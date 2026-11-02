@@ -53,31 +53,30 @@ html[data-theme="light"] {
 .sc-palette-note { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 11px; margin-bottom: 14px; }
 .sc-palette-note .lucide { width: 13px; height: 13px; }
 .sc-chain-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
-.sc-chain-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
-.sc-block { position: relative; display: flex; flex-direction: column; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 8px; gap: 6px; transition: border-color .15s, box-shadow .15s; }
-.sc-block:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); }
-.sc-block.dragging { opacity: .45; }
-.sc-block.drag-over { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
+.sc-chain-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0px; margin-bottom: 14px; }
+.sc-block { position: relative; display: flex; flex-direction: column; padding: 8px 0px; gap: 6px; transition: border-color .15s, box-shadow .15s; }
+.sc-block:nth-child(even) { background: var(--panel-2); }
 .sc-block.sc-block-fixed { border-color: color-mix(in srgb, var(--accent) 30%, var(--border)); }
-.sc-block-head { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.sc-block-head { display: block; }
 .sc-drag-icon { color: var(--muted); cursor: default; display: inline-flex; padding: 2px; }
 .sc-drag-btn { border: 0; background: transparent; color: var(--muted); cursor: grab; padding: 2px; display: inline-flex; }
 .sc-drag-btn:active { cursor: grabbing; }
 .sc-drag-icon .lucide, .sc-drag-btn .lucide { width: 14px; height: 14px; }
-.sc-block-img { flex: 1 1 auto; min-width: 0; height: 48px; display: flex; align-items: center; justify-content: center; color: var(--accent); }
-.sc-block-img svg { width: 100%; height: 100%; }
-.sc-block-dp { font-size: 10.5px; color: var(--accent); font-family: "Consolas", "SF Mono", monospace; white-space: nowrap; }
-.sc-block-actions { display: flex; gap: 2px; }
+.sc-block-img { min-width: 90px; display: flex; align-items: center; justify-content: center; color: var(--accent); width: 100%; }
+.sc-block-img svg { width: 100%; height: auto; }
+.sc-block-dp { font-size: 10.5px; color: var(--accent); font-family: "Consolas", "SF Mono", monospace; white-space: nowrap; position: absolute; top: 0px; right: 4px; }
+.sc-block-actions { display: flex; gap: 2px; padding: 0px 8px; }
 .sc-act { border: 0; background: transparent; color: var(--muted); cursor: pointer; padding: 2px; border-radius: 4px; display: inline-flex; }
 .sc-act:hover { color: var(--accent); background: var(--panel); }
 .sc-act.danger:hover { color: var(--sc-red); }
 .sc-act .lucide { width: 13px; height: 13px; }
 .sc-badge { font-size: 9px; color: var(--muted); font-weight: 700; letter-spacing: .4px; text-transform: uppercase; padding: 1px 4px; background: var(--zone); border: 1px solid var(--border); border-radius: 20px; }
-.sc-block-body { display: grid; gap: 5px; }
+.sc-block-body { display: grid; gap: 5px; padding: 0px 8px; }
 .sc-block-z { font-size: 10.5px; color: var(--text); font-family: "Consolas", "SF Mono", monospace; }
 .sc-block-fields { display: grid; gap: 4px; }
-.sc-block-info { display: flex; flex-wrap: wrap; gap: 4px 10px; padding-top: 6px; border-top: 1px solid var(--border); font-size: 10px; color: var(--muted); }
+.sc-block-info { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 10px; color: var(--muted); padding: 8px 8px 0px 8px; }
 .sc-block-info b { color: var(--text); font-family: "Consolas", "SF Mono", monospace; font-weight: 600; }
+button.sc-act.danger { position: absolute; right: 4px; }
 .sc-item-body { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; }
 .sc-item-symbol { width: 74px; min-height: 58px; border-radius: 8px; border: 1px dashed var(--border); background: var(--panel); display: flex; align-items: center; justify-content: center; color: var(--accent); }
 .sc-item-symbol svg { width: 64px; height: 52px; }
