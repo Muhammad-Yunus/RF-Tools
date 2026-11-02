@@ -592,6 +592,7 @@
     return best || sparam.data[keys[keys.length - 1]];
   }
 
+  function componentSvg(name) { return componentIcon(name); }
   function componentIcon(name) {
     var open = '<svg viewBox="0 0 500 300" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
     var close = "</svg>";
@@ -1056,27 +1057,26 @@
       var fields = "";
       for (var f = 0; f < def.fields.length; f++) fields += fieldHtml(c, def.fields[f], i);
       var fixed = isFixedComponent(i);
-      html += '<div class="sc-circuit-item' + (fixed ? " sc-fixed" : "") + '" draggable="' + (fixed ? "false" : "true") + '" data-index="' + i + '">' +
-        '<div class="sc-item-head">' +
+      html += '<div class="sc-block' + (fixed ? " sc-block-fixed" : "") + '" data-index="' + i + '" draggable="' + (fixed ? "false" : "true") + '">' +
+        '<div class="sc-block-head">' +
           (fixed
-            ? '<span class="sc-drag sc-drag-fixed" title="Fixed first block" aria-label="Fixed first block"><i data-lucide="lock"></i></span>'
-            : '<button class="sc-drag" type="button" title="Drag to reorder" aria-label="Drag to reorder"><i data-lucide="grip-vertical"></i></button>') +
-          '<span class="sc-comp-icon">' + componentIcon(def.icon) + "</span>" +
-          '<span class="sc-item-title"><b>' + esc(def.label) + '</b><small>' + esc(def.short) + "</small></span>" +
-          '<span class="sc-item-badge">' + String(i + 1).padStart(2, "0") + "</span>" +
-          '<span class="sc-item-actions">' +
+            ? '<span class="sc-drag-icon" title="Fixed first block"><i data-lucide="lock"></i></span>'
+            : '<button class="sc-drag-btn" type="button" data-action="drag-handle" data-index="' + i + '" title="Drag to reorder"><i data-lucide="grip-vertical"></i></button>') +
+          '<span class="sc-block-img">' + componentSvg(def.icon) + '</span>' +
+          '<span class="sc-block-dp">DP' + i + '</span>' +
+          '<span class="sc-block-actions">' +
             (fixed
-              ? '<span class="sc-item-fixed"><i data-lucide="lock"></i> Fixed</span>'
-              : '<button type="button" data-action="move-up" data-index="' + i + '" title="Move closer to load"><i data-lucide="arrow-left"></i></button>' +
-                '<button type="button" data-action="move-down" data-index="' + i + '" title="Move toward input"><i data-lucide="arrow-right"></i></button>' +
-                '<button class="danger" type="button" data-action="remove" data-index="' + i + '" title="Remove"><i data-lucide="trash-2"></i></button>') +
+              ? '<span class="sc-badge">Fixed</span>'
+              : '<button class="sc-act" type="button" data-action="move-up" data-index="' + i + '" title="Move closer to load"><i data-lucide="arrow-left"></i></button>' +
+                '<button class="sc-act" type="button" data-action="move-down" data-index="' + i + '" title="Move toward input"><i data-lucide="arrow-right"></i></button>' +
+                '<button class="sc-act danger" type="button" data-action="remove" data-index="' + i + '" title="Remove"><i data-lucide="trash-2"></i></button>') +
           "</span>" +
         "</div>" +
-        '<div class="sc-item-body">' +
-          '<div class="sc-item-symbol">' + componentIcon(def.icon) + "</div>" +
-          '<div class="sc-item-fields">' + fields + componentSummary(c, i) + "</div>" +
+        '<div class="sc-block-body">' +
+          '<div class="sc-block-z">Z = ' + (z ? fmtZ(z) : "\u2014") + "</div>" +
+          '<div class="sc-block-fields">' + fields + "</div>" +
         "</div>" +
-        '<div class="sc-item-previous">' +
+        '<div class="sc-block-info">' +
           '<span>Z<sub>in</sub> <b data-readout-z="' + i + '">' + (z ? fmtZ(z) : "\u2014") + "</b></span>" +
           '<span>\u0393 <b data-readout-g="' + i + '">' + (gamma ? fmtGamma(gamma) : "\u2014") + "</b></span>" +
         "</div>" +
@@ -2084,7 +2084,7 @@
       else if (action === "edit-sparam") openSparamModal(index);
     });
     $("#circuitRows").addEventListener("dragstart", function (event) {
-      var item = event.target.closest(".sc-circuit-item");
+      var item = event.target.closest(".sc-block");
       if (!item) return;
       dragIndex = Number(item.getAttribute("data-index"));
       if (isFixedComponent(dragIndex)) { dragIndex = -1; event.preventDefault(); return; }
@@ -2092,19 +2092,19 @@
       try { event.dataTransfer.setData("text/plain", String(dragIndex)); } catch (e) {}
     });
     $("#circuitRows").addEventListener("dragend", function (event) {
-      var item = event.target.closest(".sc-circuit-item");
+      var item = event.target.closest(".sc-block");
       if (item) item.classList.remove("dragging");
-      $$(".sc-circuit-item").forEach(function (el) { el.classList.remove("drag-over"); });
+      $$(".sc-block").forEach(function (el) { el.classList.remove("drag-over"); });
     });
     $("#circuitRows").addEventListener("dragover", function (event) {
-      var item = event.target.closest(".sc-circuit-item");
+      var item = event.target.closest(".sc-block");
       if (!item) return;
       event.preventDefault();
-      $$(".sc-circuit-item").forEach(function (el) { el.classList.remove("drag-over"); });
+      $$(".sc-block").forEach(function (el) { el.classList.remove("drag-over"); });
       if (!isFixedComponent(Number(item.getAttribute("data-index")))) item.classList.add("drag-over");
     });
     $("#circuitRows").addEventListener("drop", function (event) {
-      var item = event.target.closest(".sc-circuit-item");
+      var item = event.target.closest(".sc-block");
       if (!item) return;
       event.preventDefault();
       var target = Number(item.getAttribute("data-index"));
