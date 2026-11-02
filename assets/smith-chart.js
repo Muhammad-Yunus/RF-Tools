@@ -1434,7 +1434,7 @@
               if (pts.length > 1) html += '<path d="' + pathFromPoints(pts) + '" fill="none" stroke="' + color + '" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>';
               var end = pts[pts.length - 1];
               html += circle(end.x, end.y, dp === 0 ? 4.6 : 5.5, 'fill="' + color + '" stroke="' + colors.chartBg + '" stroke-width="1.4"');
-              addHoverSnap(end.x, end.y, componentImpedanceAt(dp), "Block " + (dp + 1), null, color);
+              addHoverSnap(end.x, end.y, componentImpedanceAt(dp), "DP" + dp, null, color);
               if (dp > 0 && dp < 9) html += svgText(end.x + 8, end.y - 6, String(dp), 'font-size="8" fill="' + colors.muted + '"');
             }
           }
