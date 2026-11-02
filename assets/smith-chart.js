@@ -1319,12 +1319,12 @@
          var gy = 2 * nx / (nx * nx + 1);
          var lx = g.cx + g.R * gx;
          var ly = g.cy - g.R * gy * rx;
-         var offset = 12;
+         var offset = 10;
          var textAnchor;
-         if (gx < 0) {
+         if (gx < -0.3) {
            textAnchor = 'end';
            lx = lx - offset;
-         } else if (gx > 0) {
+         } else if (gx > 0.3) {
            textAnchor = 'start';
            lx = lx + offset;
          } else {
