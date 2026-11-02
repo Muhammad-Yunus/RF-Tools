@@ -1311,8 +1311,9 @@
       var xcy = g.cy - g.R / x;
       html += circle(xc, xcy, g.R / Math.abs(x), 'fill="none" stroke="' + colors.gridSoft + '" stroke-width="0.8" clip-path="url(#scClip)"');
        if (Math.abs(x) === 0.2 || Math.abs(x) === 0.5 || Math.abs(x) === 1 || Math.abs(x) === 2 || Math.abs(x) === 4 || Math.abs(x) === 10) {
-        var labelX = (Math.abs(x) * 50).toFixed(0);
-        var suffix = x > 0 ? 'j' : '-j';
+         var labelX = (Math.abs(x) * 50).toFixed(0);
+         var labelPrefix = x > 0 ? '' : '-';
+         var suffix = 'j';
         var rx = x / Math.abs(x);
         var nx = Math.abs(x);
         var gx = (nx * nx - 1) / (nx * nx + 1);
