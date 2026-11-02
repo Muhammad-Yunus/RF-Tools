@@ -1484,7 +1484,6 @@
     // Re-append hover overlay after redraw
     if (hoverOverlay && hoverOverlay.parentNode !== svg) {
       svg.appendChild(hoverOverlay);
-      console.log('[hover] overlay re-added after drawSmith');
     }
   }
 
@@ -1493,12 +1492,10 @@
     hoverSnaps.push({ x: x, y: y, z: z, label: label, frequency: frequency, color: color });
   }
 
-   function bindChartHover() {
+  function bindChartHover() {
     var svg = $("#smithSvg");
     var tip = $("#smithTip");
     if (!svg || !tip) return;
-
-    console.log('[hover] bindChartHover called, svg:', svg ? 'found' : 'null', 'tip:', tip ? 'found' : 'null');
 
     var g = smithGeometry();
     var colors = {
@@ -1513,30 +1510,26 @@
     hoverOverlay.setAttribute("id", "hoverOverlay");
     hoverOverlay.style.pointerEvents = "none";
     svg.appendChild(hoverOverlay);
-    console.log('[hover] overlay created and appended to svg');
 
     svg.addEventListener("mousemove", function (event) {
-      console.log('[hover] mousemove triggered, clientX:', event.clientX, 'clientY:', event.clientY);
       var point = svg.createSVGPoint();
       point.x = event.clientX;
       point.y = event.clientY;
       var ctm = svg.getScreenCTM();
-      if (!ctm) { console.log('[hover] no CTM, exiting'); return; }
+      if (!ctm) return;
       var p = point.matrixTransform(ctm.inverse());
-      console.log('[hover] SVG point p:', p.x.toFixed(2), p.y.toFixed(2), 'ctm:', ctm.a.toFixed(3), ctm.b.toFixed(3), ctm.c.toFixed(3), ctm.d.toFixed(3));
 
-       // Check if point is within chart
-       var g = smithGeometry();
-       var dx = p.x - g.cx;
-       var dy = p.y - g.cy;
-       var dist = Math.sqrt(dx * dx + dy * dy);
-       console.log('[hover] dist from center:', dist.toFixed(2), 'max R:', g.R, 'inside:', dist <= g.R);
-       if (dist > g.R) {
-         hoverOverlay.innerHTML = "";
-         hoverZ = null;
-         tip.classList.add("hidden");
-         return;
-       }
+      // Check if point is within chart
+      var g = smithGeometry();
+      var dx = p.x - g.cx;
+      var dy = p.y - g.cy;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > g.R) {
+        hoverOverlay.innerHTML = "";
+        hoverZ = null;
+        tip.classList.add("hidden");
+        return;
+      }
 
       // Convert point to reflection coefficient
       var gamma = { real: dx / g.R, imaginary: -dy / g.R };
@@ -1555,6 +1548,11 @@
 
       hoverZ = { real: r, imaginary: x };
 
+      // Use actual impedance for labels (normalized * Z0)
+      var zo = appData ? appData.settings.zo : 50;
+      var rActual = r * zo;
+      var xActual = x * zo;
+
       // Draw constant-resistance circle
       var rCircleCx = g.cx + g.R * r / (1 + r);
       var rCircleCy = g.cy;
@@ -1569,14 +1567,13 @@
       var xArcHtml = circle(xCircleCx, xCircleCy, xCircleR,
         'fill="none" stroke="' + colors.orange + '" stroke-width="1.5" stroke-dasharray="6,3" opacity=".85" clip-path="url(#scClip)"');
 
-       // Draw intersection point marker
-       var markerHtml = circle(p.x, p.y, 6,
-         'fill="rgba(229,231,147,.9)" stroke="#111309" stroke-width="2"');
+      // Draw intersection point marker
+      var markerHtml = circle(p.x, p.y, 6,
+        'fill="rgba(229,231,147,.9)" stroke="#111309" stroke-width="2"');
 
-       console.log('[hover] drawing overlay, r=', r.toFixed(3), 'x=', x.toFixed(3));
-       // Draw coordinate labels
-      var rLabel = r.toFixed(2);
-      var xLabel = x >= 0 ? '+' + x.toFixed(2) : x.toFixed(2);
+      // Draw coordinate labels
+      var rLabel = rActual.toFixed(2);
+      var xLabel = xActual >= 0 ? '+' + xActual.toFixed(2) : xActual.toFixed(2);
       var labelHtml = '<text x="' + (p.x + 12) + '" y="' + (p.y - 12) + '" font-size="11px" fill="#E5E793" text-anchor="start" dominant-baseline="auto">' +
         'R=' + rLabel + 'Ω' +
         '</text>' +
@@ -1584,13 +1581,7 @@
         'X=' + (x >= 0 ? '+' : '') + xLabel + 'Ω' +
         '</text>';
 
-       hoverOverlay.innerHTML = rCircleHtml + xArcHtml + markerHtml + labelHtml;
-
-       console.log('[hover] overlay children:', hoverOverlay.children.length);
-       console.log('[hover] overlay style:', hoverOverlay.style.cssText || 'none');
-       console.log('[hover] svg child count:', svg.children.length);
-       console.log('[hover] rCircleHtml:', rCircleHtml);
-       console.log('[hover] xArcHtml:', xArcHtml);
+      hoverOverlay.innerHTML = rCircleHtml + xArcHtml + markerHtml + labelHtml;
 
       // Update tooltip
       var best = null;
@@ -1608,7 +1599,6 @@
       }
     });
     svg.addEventListener("mouseleave", function () {
-      console.log('[hover] mouseleave triggered');
       hoverOverlay.innerHTML = "";
       hoverZ = null;
       tip.classList.add("hidden");
