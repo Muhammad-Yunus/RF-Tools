@@ -1481,6 +1481,11 @@
       addHoverSnap(zp.x, zp.y, { real: Number(zm[0]), imaginary: Number(zm[1]) }, "Marker " + (mi + 1), null, colors.red);
     }
     svg.innerHTML = html;
+    // Re-append hover overlay after redraw
+    if (hoverOverlay && hoverOverlay.parentNode !== svg) {
+      svg.appendChild(hoverOverlay);
+      console.log('[hover] overlay re-added after drawSmith');
+    }
   }
 
   function addHoverSnap(x, y, z, label, frequency, color) {
@@ -1579,7 +1584,13 @@
         'X=' + (x >= 0 ? '+' : '') + xLabel + 'Ω' +
         '</text>';
 
-      hoverOverlay.innerHTML = rCircleHtml + xArcHtml + markerHtml + labelHtml;
+       hoverOverlay.innerHTML = rCircleHtml + xArcHtml + markerHtml + labelHtml;
+
+       console.log('[hover] overlay children:', hoverOverlay.children.length);
+       console.log('[hover] overlay style:', hoverOverlay.style.cssText || 'none');
+       console.log('[hover] svg child count:', svg.children.length);
+       console.log('[hover] rCircleHtml:', rCircleHtml);
+       console.log('[hover] xArcHtml:', xArcHtml);
 
       // Update tooltip
       var best = null;
