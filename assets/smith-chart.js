@@ -597,7 +597,7 @@
     var open = '<svg viewBox="0 0 500 300" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
     var close = "</svg>";
     var body = "";
-    if (name === "blackBox") body = '<rect x="125" y="30" width="250" height="140" fill="currentColor" fill-opacity=".15"/><path d="M320 100 L500 100"/><text x="250" y="110" font-family="Helvetica" font-size="35" text-anchor="middle" fill="currentColor" stroke="none">BLACK BOX</text>';
+    if (name === "blackBox") body = '<rect x="125" y="30" width="250" height="140" fill="currentColor" fill-opacity=".15"/><path d="M380 100 L500 100"/><text x="250" y="110" font-family="Helvetica" font-size="35" text-anchor="middle" fill="currentColor" stroke="none">BLACK BOX</text>';
     else if (name === "loadTerm") body = '<path d="M0 100 L195 100"/><path d="M315 100 L500 100"/><path d="M205 70 L195 100"/><path d="M205 70 L225 130"/><path d="M245 70 L265 130"/><path d="M285 70 L305 130"/><path d="M245 70 L225 130"/><path d="M285 70 L265 130"/><path d="M315 100 L305 130"/>';
     else if (name === "shortedCap") body = '<path d="M0 100 L500 100"/><path d="M255 170 L255 100"/><path d="M185 170 L325 170"/><path d="M185 200 L325 200"/><path d="M255 260 L255 200"/><path d="M255 260 L285 260 Q295 260 287 267 L263 285 Q255 291 247 285 L223 267 Q215 260 225 260 L255 260"/>';
     else if (name === "seriesCap") body = '<path d="M0 100 L235 100"/><path d="M240 30 L240 170"/><path d="M270 30 L270 170"/><path d="M275 100 L500 100"/>';
