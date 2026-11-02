@@ -1563,8 +1563,8 @@
         'fill="rgba(229,231,147,.9)" stroke="#111309" stroke-width="2"');
 
       // Draw coordinate labels
-      var rLabel = (r * 50).toFixed(1);
-      var xLabel = (x * 50).toFixed(1);
+      var rLabel = r.toFixed(2);
+      var xLabel = x >= 0 ? '+' + x.toFixed(2) : x.toFixed(2);
       var labelHtml = '<text x="' + (p.x + 12) + '" y="' + (p.y - 12) + '" font-size="11px" fill="#E5E793" text-anchor="start" dominant-baseline="auto">' +
         'R=' + rLabel + 'Ω' +
         '</text>' +
