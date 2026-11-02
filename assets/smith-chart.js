@@ -1313,24 +1313,19 @@
         if (Math.abs(x) === 0.2 || Math.abs(x) === 0.5 || Math.abs(x) === 1 || Math.abs(x) === 2 || Math.abs(x) === 4 || Math.abs(x) === 10) {
          var labelX = (Math.abs(x) * 50).toFixed(0);
          var labelPrefix = x > 0 ? 'j' : '-j';
-         var rx = x / Math.abs(x);
          var nx = Math.abs(x);
+         // Intersection point with outer circle using Smith chart formula
          var gx = (nx * nx - 1) / (nx * nx + 1);
          var gy = 2 * nx / (nx * nx + 1);
          var lx = g.cx + g.R * gx;
-         var ly = g.cy - g.R * gy * rx;
+         var ly = g.cy - g.R * gy;
+         // Offset label outward from circle edge
          var offset = 10;
-         var textAnchor;
-         if (gx < -0.3) {
-           textAnchor = 'end';
-           lx = lx - offset;
-         } else if (gx > 0.3) {
-           textAnchor = 'start';
-           lx = lx + offset;
-         } else {
-           textAnchor = 'middle';
-         }
-         html += svgText(lx, ly, labelPrefix + labelX, 'font-size="10px" fill="' + colors.accent + '" text-anchor="' + textAnchor + '" dominant-baseline="middle"');
+         var angle = Math.atan2(gy, gx);
+         var lx2 = lx + offset * Math.cos(angle);
+         var ly2 = ly + offset * Math.sin(angle);
+         var textAnchor = gx > 0 ? 'start' : (gx < 0 ? 'end' : 'middle');
+         html += svgText(lx2, ly2, labelPrefix + labelX, 'font-size="10px" fill="' + colors.accent + '" text-anchor="' + textAnchor + '" dominant-baseline="middle"');
        }
     }
     html += '<line x1="' + (g.cx - g.R) + '" y1="' + g.cy + '" x2="' + (g.cx + g.R) + '" y2="' + g.cy + '" stroke="' + colors.grid + '" stroke-width="0.9"/>';
