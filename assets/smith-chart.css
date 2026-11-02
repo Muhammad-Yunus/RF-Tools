@@ -54,7 +54,7 @@ html[data-theme="light"] {
 .sc-palette-note .lucide { width: 13px; height: 13px; }
 .sc-chain-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
 .sc-chain-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0px; margin-bottom: 14px; }
-.sc-block { position: relative; display: flex; flex-direction: column; padding: 8px 0px; gap: 6px; transition: border-color .15s, box-shadow .15s; }
+.sc-block { position: relative; display: flex; flex-direction: column; padding: 8px 0px; gap: 6px; transition: border-color .15s, box-shadow .15s; margin: 0px 0px 8px; }
 .sc-block:nth-child(even) { background: var(--panel-2); }
 .sc-block.sc-block-fixed { border-color: color-mix(in srgb, var(--accent) 30%, var(--border)); }
 .sc-block-head { display: block; }
