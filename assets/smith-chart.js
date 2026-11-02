@@ -853,6 +853,8 @@
   var dragIndex = -1;
   var toastTimer = 0;
   var hoverSnaps = [];
+  var hoverOverlay = null;
+  var hoverZ = null;
 
   function componentUrl(c) {
     var def = circuitComponents[c.name];
@@ -1490,6 +1492,21 @@
     var svg = $("#smithSvg");
     var tip = $("#smithTip");
     if (!svg || !tip) return;
+
+    var g = smithGeometry();
+    var colors = {
+      cyan: cssVar("--sc-cyan", "#22d3ee"),
+      orange: cssVar("--sc-orange", "#f5a524"),
+      accent: cssVar("--accent", "#e5e793"),
+      chartBg: cssVar("--sc-chart-bg", "#111309")
+    };
+
+    // Create overlay for crosshair circles
+    hoverOverlay = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    hoverOverlay.setAttribute("id", "hoverOverlay");
+    hoverOverlay.style.pointerEvents = "none";
+    svg.appendChild(hoverOverlay);
+
     svg.addEventListener("mousemove", function (event) {
       var point = svg.createSVGPoint();
       point.x = event.clientX;
@@ -1497,6 +1514,66 @@
       var ctm = svg.getScreenCTM();
       if (!ctm) return;
       var p = point.matrixTransform(ctm.inverse());
+
+      // Check if point is within chart
+      var g = smithGeometry();
+      var dx = p.x - g.cx;
+      var dy = p.y - g.cy;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > g.R) {
+        hoverOverlay.innerHTML = "";
+        hoverZ = null;
+        tip.classList.add("hidden");
+        return;
+      }
+
+      // Convert point to reflection coefficient
+      var gamma = { real: dx / g.R, imaginary: -dy / g.R };
+
+      // Convert to normalized impedance
+      var zNorm = reflToZ(gamma, 1);
+      var r = zNorm.real;
+      var x = zNorm.imaginary;
+
+      if (r < 0 || !isFinite(r) || !isFinite(x)) {
+        hoverOverlay.innerHTML = "";
+        hoverZ = null;
+        tip.classList.add("hidden");
+        return;
+      }
+
+      hoverZ = { real: r, imaginary: x };
+
+      // Draw constant-resistance circle
+      var rCircleCx = g.cx + g.R * r / (1 + r);
+      var rCircleR = g.R / (1 + r);
+      var rCircleHtml = circle(rCircleCx, rCircleCy, rCircleR,
+        'fill="none" stroke="' + colors.cyan + '" stroke-width="1.5" stroke-dasharray="6,3" opacity=".85"');
+
+      // Draw constant-reactance arc (full circle clipped)
+      var xCircleCx = g.cx + g.R;
+      var xCircleCy = g.cy - g.R / x;
+      var xCircleR = g.R / Math.abs(x);
+      var xArcHtml = circle(xCircleCx, xCircleCy, xCircleR,
+        'fill="none" stroke="' + colors.orange + '" stroke-width="1.5" stroke-dasharray="6,3" opacity=".85" clip-path="url(#scClip)"');
+
+      // Draw intersection point marker
+      var markerHtml = circle(p.x, p.y, 6,
+        'fill="rgba(229,231,147,.9)" stroke="#111309" stroke-width="2"');
+
+      // Draw coordinate labels
+      var rLabel = (r * 50).toFixed(1);
+      var xLabel = (x * 50).toFixed(1);
+      var labelHtml = '<text x="' + (p.x + 12) + '" y="' + (p.y - 12) + '" font-size="11px" fill="#E5E793" text-anchor="start" dominant-baseline="auto">' +
+        'R=' + rLabel + 'Ω' +
+        '</text>' +
+        '<text x="' + (p.x + 12) + '" y="' + (p.y - 0) + '" font-size="11px" fill="#F5A524" text-anchor="start" dominant-baseline="middle">' +
+        'X=' + (x >= 0 ? '+' : '') + xLabel + 'Ω' +
+        '</text>';
+
+      hoverOverlay.innerHTML = rCircleHtml + xArcHtml + markerHtml + labelHtml;
+
+      // Update tooltip
       var best = null;
       var bestDist = 12;
       for (var i = 0; i < hoverSnaps.length; i++) {
@@ -1511,7 +1588,11 @@
         tip.classList.add("hidden");
       }
     });
-    svg.addEventListener("mouseleave", function () { tip.classList.add("hidden"); });
+    svg.addEventListener("mouseleave", function () {
+      hoverOverlay.innerHTML = "";
+      hoverZ = null;
+      tip.classList.add("hidden");
+    });
   }
 
   function renderPlots() {
