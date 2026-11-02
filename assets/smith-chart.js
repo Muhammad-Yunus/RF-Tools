@@ -1578,7 +1578,7 @@
         'R=' + rLabel + 'Ω' +
         '</text>' +
         '<text x="' + (p.x + 12) + '" y="' + (p.y - 0) + '" font-size="11px" fill="#F5A524" text-anchor="start" dominant-baseline="middle">' +
-        'X=' + (xActual >= 0 ? '+' : '') + xLabel + 'Ω' +
+        'X=' + xLabel + 'Ω' +
         '</text>';
 
       hoverOverlay.innerHTML = rCircleHtml + xArcHtml + markerHtml + labelHtml;
