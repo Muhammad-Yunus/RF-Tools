@@ -1310,6 +1310,15 @@
       var xc = g.cx + g.R;
       var xcy = g.cy - g.R / x;
       html += circle(xc, xcy, g.R / Math.abs(x), 'fill="none" stroke="' + colors.gridSoft + '" stroke-width="0.8" clip-path="url(#scClip)"');
+      if (x === 0.2 || x === 0.5 || x === 1 || x === 2 || x === 4 || x === 10) {
+        var labelX = (x * 50).toFixed(0);
+        var isInductive = x > 0;
+        var normX = x / (1 + x * x);
+        var labelY = g.cy - g.R + g.R * normX * 0.7;
+        var textAnchor = isInductive ? 'start' : 'start';
+        var suffix = isInductive ? 'j' : '-j';
+        html += svgText(g.cx + g.R + 8, labelY, labelX + suffix, 'font-size="10px" fill="' + colors.accent + '" text-anchor="' + textAnchor + '"');
+      }
     }
     html += '<line x1="' + (g.cx - g.R) + '" y1="' + g.cy + '" x2="' + (g.cx + g.R) + '" y2="' + g.cy + '" stroke="' + colors.grid + '" stroke-width="0.9"/>';
     html += svgText(g.cx + g.R - 17, g.cy - 5, "OPEN", 'font-size="7" fill="' + colors.muted + '" text-anchor="end"');
