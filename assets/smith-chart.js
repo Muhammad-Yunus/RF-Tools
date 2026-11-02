@@ -1300,7 +1300,7 @@
       html += circle(g.cx + rc, g.cy, g.R / (1 + r), 'fill="none" stroke="' + colors.gridSoft + '" stroke-width="0.8"');
       if (r === 0 || r === 0.2 || r === 0.5 || r === 1 || r === 2 || r === 4 || r === 10) {
         var label = r === 0 ? "0" : (r * 50).toFixed(0);
-        var lx = g.cx - g.R + g.R * r;
+        var lx = g.cx - g.R + 2 * g.R * r / (1 + r);
         html += svgText(lx, g.cy + 11, label, 'font-size="11px" fill="' + colors.accent + '" text-anchor="middle"');
       }
     }
