@@ -1323,7 +1323,7 @@
         var offset = 12;
         var textAnchor = gx > 0 ? 'start' : 'end';
         var verticalAlign = 'middle';
-        html += svgText(lx + (gx > 0 ? offset : -offset), ly, labelX + suffix, 'font-size="10px" fill="' + colors.accent + '" text-anchor="' + textAnchor + '" dominant-baseline="' + verticalAlign + '"');
+         html += svgText(lx + (gx > 0 ? offset : -offset), ly, labelPrefix + labelX + suffix, 'font-size="10px" fill="' + colors.accent + '" text-anchor="' + textAnchor + '" dominant-baseline="' + verticalAlign + '"');
       }
     }
     html += '<line x1="' + (g.cx - g.R) + '" y1="' + g.cy + '" x2="' + (g.cx + g.R) + '" y2="' + g.cy + '" stroke="' + colors.grid + '" stroke-width="0.9"/>';
