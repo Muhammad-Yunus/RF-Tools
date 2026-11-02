@@ -1317,11 +1317,13 @@
          // Intersection point with outer circle using Smith chart formula
          var gx = (nx * nx - 1) / (nx * nx + 1);
          var gy = 2 * nx / (nx * nx + 1);
+         // Use negative gy for capacitive (x < 0) to mirror below axis
+         var lyBase = x > 0 ? g.cy - g.R * gy : g.cy + g.R * gy;
          var lx = g.cx + g.R * gx;
-         var ly = g.cy - g.R * gy;
+         var ly = lyBase;
          // Offset label outward from circle edge
          var offset = 10;
-         var angle = Math.atan2(gy, gx);
+         var angle = Math.atan2(ly - g.cy, lx - g.cx);
          var lx2 = lx + offset * Math.cos(angle);
          var ly2 = ly + offset * Math.sin(angle);
          var textAnchor = gx > 0 ? 'start' : (gx < 0 ? 'end' : 'middle');
