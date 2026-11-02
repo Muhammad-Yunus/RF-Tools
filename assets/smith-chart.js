@@ -1546,6 +1546,7 @@
 
       // Draw constant-resistance circle
       var rCircleCx = g.cx + g.R * r / (1 + r);
+      var rCircleCy = g.cy;
       var rCircleR = g.R / (1 + r);
       var rCircleHtml = circle(rCircleCx, rCircleCy, rCircleR,
         'fill="none" stroke="' + colors.cyan + '" stroke-width="1.5" stroke-dasharray="6,3" opacity=".85"');
