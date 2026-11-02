@@ -1311,13 +1311,18 @@
       var xcy = g.cy - g.R / x;
       html += circle(xc, xcy, g.R / Math.abs(x), 'fill="none" stroke="' + colors.gridSoft + '" stroke-width="0.8" clip-path="url(#scClip)"');
       if (x === 0.2 || x === 0.5 || x === 1 || x === 2 || x === 4 || x === 10) {
-        var labelX = (x * 50).toFixed(0);
-        var isInductive = x > 0;
-        var normX = x / (1 + x * x);
-        var labelY = g.cy - g.R + g.R * normX * 0.7;
-        var textAnchor = isInductive ? 'start' : 'start';
-        var suffix = isInductive ? 'j' : '-j';
-        html += svgText(g.cx + g.R + 8, labelY, labelX + suffix, 'font-size="10px" fill="' + colors.accent + '" text-anchor="' + textAnchor + '"');
+        var labelX = (Math.abs(x) * 50).toFixed(0);
+        var suffix = x > 0 ? 'j' : '-j';
+        var rx = x / Math.abs(x);
+        var nx = Math.abs(x);
+        var gx = (nx * nx - 1) / (nx * nx + 1);
+        var gy = 2 * nx / (nx * nx + 1);
+        var lx = g.cx + g.R * gx;
+        var ly = g.cy - g.R * gy * rx;
+        var offset = 12;
+        var textAnchor = gx > 0 ? 'start' : 'end';
+        var verticalAlign = 'middle';
+        html += svgText(lx + (gx > 0 ? offset : -offset), ly, labelX + suffix, 'font-size="10px" fill="' + colors.accent + '" text-anchor="' + textAnchor + '" dominant-baseline="' + verticalAlign + '"');
       }
     }
     html += '<line x1="' + (g.cx - g.R) + '" y1="' + g.cy + '" x2="' + (g.cx + g.R) + '" y2="' + g.cy + '" stroke="' + colors.grid + '" stroke-width="0.9"/>';
