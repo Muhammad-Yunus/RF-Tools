@@ -642,7 +642,7 @@
         { key: "imaginary", label: "Reactance X", unit: "\u03a9", step: "any" },
         { key: "tolerance", label: "Tolerance", unit: "%", step: "any", optional: true }
       ],
-      default: { real: 50, imaginary: 0, tolerance: 0 },
+      default: { real: 25, imaginary: 12, tolerance: 0 },
       toURL: function (c) { return "blackBox_" + c.real + "_" + c.imaginary + "_" + (c.tolerance || 0); },
       fromURL: function (p) { return { real: Number(p[0]), imaginary: Number(p[1]), tolerance: Number(p[2] || 0) }; }
     },
@@ -866,7 +866,7 @@
   function readCircuitFromUrl() {
     var params = new URLSearchParams(location.search);
     var value = params.get("circuit");
-    if (!value) return [{ name: "blackBox", real: 50, imaginary: 0, tolerance: 0 }];
+    if (!value) return [{ name: "blackBox", real: 25, imaginary: 12, tolerance: 0 }];
     var blocks = value.split("__");
     var out = [];
     for (var i = 0; i < blocks.length; i++) {
@@ -881,7 +881,7 @@
       for (var k in parsed) component[k] = parsed[k];
       out.push(component);
     }
-    return out.length ? out : [{ name: "blackBox", real: 50, imaginary: 0, tolerance: 0 }];
+    return out.length ? out : [{ name: "blackBox", real: 25, imaginary: 12, tolerance: 0 }];
   }
 
   function isFixedComponent(index) {
